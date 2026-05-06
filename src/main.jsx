@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import {
   BookOpen,
@@ -198,6 +199,17 @@ const SCALES = [
 const SCALE_CATEGORIES = ["All", "Major & Modes", "Minor & Harmonic", "Pentatonic & Blues"];
 
 const STORAGE_KEY = "fretflow-state-v1";
+const ROUTES = {
+  home: "/",
+  dashboard: "/dashboard",
+  library: "/library",
+  practice: "/practice",
+  about: "/about",
+};
+
+function viewFromLocation() {
+  return Object.entries(ROUTES).find(([, route]) => route === window.location.pathname)?.[0] || "home";
+}
 
 function createProfile(name = "New Student") {
   const id = `profile-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -206,6 +218,10 @@ function createProfile(name = "New Student") {
     name,
     selectedScaleId: "a-minor-pentatonic",
     positionStart: 5,
+    showNoteNames: true,
+    showScaleDegrees: false,
+    rootOnly: false,
+    sequenceDirection: "up-down",
     bpm: 80,
     sound: true,
     minutes: 0,
@@ -253,6 +269,21 @@ function getScaleNoteLabels(scale) {
   return labels;
 }
 
+function getScaleDegreeLabels(scale) {
+  const rootPc = pitchClass(scale.root);
+  const labels = new Map();
+  scale.formula.forEach((degree, index) => {
+    labels.set((rootPc + scale.intervals[index]) % 12, degree);
+  });
+  return labels;
+}
+
+function getOrderedScaleNotes(scale) {
+  const noteLabels = getScaleNoteLabels(scale);
+  const rootPc = pitchClass(scale.root);
+  return scale.intervals.map((interval) => noteLabels.get((rootPc + interval) % 12));
+}
+
 function getDefaultPositionStart(scale) {
   return scale.defaultPositionStart ?? 0;
 }
@@ -276,6 +307,7 @@ function getFretboardNotes(scale, positionStart, fretCount = 19) {
   const pcs = getScalePitchClasses(scale);
   const rootPc = pitchClass(scale.root);
   const noteLabels = getScaleNoteLabels(scale);
+  const degreeLabels = getScaleDegreeLabels(scale);
   const position = getPositionRange(positionStart ?? getDefaultPositionStart(scale));
   const cells = [];
 
@@ -292,6 +324,7 @@ function getFretboardNotes(scale, positionStart, fretCount = 19) {
           fret,
           note,
           displayName: noteLabels.get(pc) || note.name,
+          degreeName: degreeLabels.get(pc) || "",
           isRoot: pc === rootPc,
         });
       }
@@ -301,12 +334,20 @@ function getFretboardNotes(scale, positionStart, fretCount = 19) {
   return cells.sort((a, b) => a.note.midi - b.note.midi || b.stringIndex - a.stringIndex || a.fret - b.fret);
 }
 
+function getPracticeSequence(notes, direction) {
+  if (direction === "descending") return [...notes].reverse();
+  if (direction === "up-down") {
+    const descending = [...notes].reverse().slice(1, -1);
+    return [...notes, ...descending];
+  }
+  return notes;
+}
+
 function usePersistedState() {
   const [state, setState] = useState(() => {
-    const firstProfile = createProfile("Mastery Level");
     const fallback = {
-      activeProfileId: firstProfile.id,
-      profiles: [firstProfile],
+      activeProfileId: null,
+      profiles: [],
     };
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -318,12 +359,17 @@ function usePersistedState() {
             ...profile,
             hasPracticeStarted: Boolean(profile.hasPracticeStarted),
             positionStart: Number(profile.positionStart ?? getDefaultPositionStart(SCALES.find((scale) => scale.id === profile.selectedScaleId) || SCALES[0])),
+            showNoteNames: profile.showNoteNames !== false,
+            showScaleDegrees: Boolean(profile.showScaleDegrees),
+            rootOnly: Boolean(profile.rootOnly),
+            sequenceDirection: profile.sequenceDirection || "up-down",
             minutes: Number(profile.minutes || 0),
             streak: Number(profile.streak || 0),
           })),
         };
       }
       if (saved.selectedScaleId || saved.bpm || saved.sound !== undefined) {
+        const firstProfile = createProfile("Mastery Level");
         return {
           activeProfileId: firstProfile.id,
           profiles: [
@@ -331,6 +377,10 @@ function usePersistedState() {
               ...firstProfile,
               selectedScaleId: saved.selectedScaleId || firstProfile.selectedScaleId,
               positionStart: Number(saved.positionStart ?? firstProfile.positionStart),
+              showNoteNames: saved.showNoteNames !== false,
+              showScaleDegrees: Boolean(saved.showScaleDegrees),
+              rootOnly: Boolean(saved.rootOnly),
+              sequenceDirection: saved.sequenceDirection || "up-down",
               bpm: Number(saved.bpm || firstProfile.bpm),
               sound: saved.sound !== undefined ? Boolean(saved.sound) : firstProfile.sound,
               minutes: 0,
@@ -355,37 +405,97 @@ function usePersistedState() {
 
 function useToneSampler(sound) {
   const samplerRef = useRef(null);
+  const toneRef = useRef(null);
+  const readyRef = useRef(null);
 
-  const trigger = useCallback(async (noteLabel) => {
-    if (!sound) return;
-    const Tone = await import("tone");
-    await Tone.start();
-    if (!samplerRef.current) {
-      samplerRef.current = new Tone.PolySynth(Tone.Synth, {
-        oscillator: { type: "triangle" },
-        envelope: { attack: 0.004, decay: 0.14, sustain: 0.18, release: 0.35 },
-      }).toDestination();
-      samplerRef.current.volume.value = -15;
+  const prepare = useCallback(async (startAudio = false) => {
+    if (!readyRef.current) {
+      readyRef.current = import("tone").then(async (Tone) => {
+        toneRef.current = Tone;
+        if (!samplerRef.current) {
+          samplerRef.current = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.004, decay: 0.14, sustain: 0.18, release: 0.35 },
+          }).toDestination();
+          samplerRef.current.volume.value = -15;
+        }
+        return samplerRef.current;
+      });
     }
-    samplerRef.current.triggerAttackRelease(noteLabel, "8n");
-  }, [sound]);
+    const synth = await readyRef.current;
+    if (startAudio && toneRef.current) await toneRef.current.start();
+    return synth;
+  }, []);
 
-  return trigger;
+  useEffect(() => {
+    if (sound) prepare(false);
+  }, [prepare, sound]);
+
+  const primeAudio = useCallback(async () => {
+    if (sound) await prepare(true);
+  }, [prepare, sound]);
+
+  const trigger = useCallback((noteLabel) => {
+    if (!sound) return;
+    if (samplerRef.current && toneRef.current) {
+      samplerRef.current.triggerAttackRelease(noteLabel, 0.16, toneRef.current.now());
+      return;
+    }
+    prepare(true).then((synth) => {
+      const Tone = toneRef.current;
+      synth.triggerAttackRelease(noteLabel, 0.16, Tone?.now?.());
+    });
+  }, [prepare, sound]);
+
+  return { triggerNote: trigger, primeAudio };
 }
 
 function App() {
-  const [view, setView] = useState("dashboard");
+  const [view, setView] = useState(() => viewFromLocation());
   const [appState, setAppState] = usePersistedState();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileModalMode, setProfileModalMode] = useState("create");
+  const [afterProfileCreate, setAfterProfileCreate] = useState(null);
   const [deleteProfileOpen, setDeleteProfileOpen] = useState(false);
+  const [profileSwitcherOpen, setProfileSwitcherOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [step, setStep] = useState(0);
-  const activeProfile = appState.profiles.find((profile) => profile.id === appState.activeProfileId) || appState.profiles[0];
+  const fallbackProfile = useMemo(() => createProfile("Guest"), []);
+  const activeProfile = appState.profiles.find((profile) => profile.id === appState.activeProfileId) || appState.profiles[0] || fallbackProfile;
   const prefs = activeProfile;
   const selectedScale = SCALES.find((scale) => scale.id === prefs.selectedScaleId) || SCALES[0];
-  const sequence = useMemo(() => getFretboardNotes(selectedScale, prefs.positionStart), [selectedScale, prefs.positionStart]);
-  const triggerNote = useToneSampler(prefs.sound);
+  const fretboardNotes = useMemo(() => getFretboardNotes(selectedScale, prefs.positionStart), [selectedScale, prefs.positionStart]);
+  const sequence = useMemo(() => getPracticeSequence(fretboardNotes, prefs.sequenceDirection), [fretboardNotes, prefs.sequenceDirection]);
+  const { triggerNote, primeAudio } = useToneSampler(prefs.sound);
+  const stepRef = useRef(step);
+
+  useEffect(() => {
+    stepRef.current = step;
+  }, [step]);
+
+  const playSequenceStep = useCallback((stepIndex) => {
+    if (sequence.length === 0) return;
+    const activeNote = sequence[stepIndex % sequence.length];
+    if (activeNote) triggerNote(activeNote.note.label);
+  }, [sequence, triggerNote]);
+
+  const navigate = useCallback((nextView) => {
+    const route = ROUTES[nextView] ?? "/";
+    if (window.location.pathname !== route) {
+      window.history.pushState({}, "", route);
+    }
+    setView(nextView);
+  }, []);
+
+  useEffect(() => {
+    function handlePopState() {
+      setView(viewFromLocation());
+    }
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   const setPrefs = useCallback((updater) => {
     setAppState((current) => ({
@@ -400,17 +510,16 @@ function App() {
 
   useEffect(() => {
     if (!isPlaying || sequence.length === 0) return undefined;
-    triggerNote(sequence[step % sequence.length].note.label);
+    playSequenceStep(stepRef.current);
     const interval = window.setInterval(() => {
-      setStep((current) => {
-        const next = (current + 1) % sequence.length;
-        triggerNote(sequence[next].note.label);
-        return next;
-      });
+      const next = (stepRef.current + 1) % sequence.length;
+      stepRef.current = next;
+      flushSync(() => setStep(next));
+      playSequenceStep(next);
     }, 60000 / prefs.bpm);
 
     return () => window.clearInterval(interval);
-  }, [isPlaying, prefs.bpm, sequence, triggerNote]);
+  }, [isPlaying, playSequenceStep, prefs.bpm, sequence.length]);
 
   function openPractice(scaleId = prefs.selectedScaleId, markStarted = true) {
     const nextScale = SCALES.find((scale) => scale.id === scaleId) || selectedScale;
@@ -423,14 +532,29 @@ function App() {
       lastPracticeAt: markStarted ? new Date().toISOString() : current.lastPracticeAt,
     }));
     setStep(0);
-    setView("practice");
+    navigate("practice");
   }
 
   function updateActiveProfileName(name) {
     setPrefs({ name });
   }
 
-  function createNewProfile(name) {
+  function resetActiveProfileProgress() {
+    setPrefs((current) => ({
+      ...current,
+      selectedScaleId: "a-minor-pentatonic",
+      positionStart: 5,
+      minutes: 0,
+      streak: 0,
+      hasPracticeStarted: false,
+      lastPracticeAt: null,
+    }));
+    setIsPlaying(false);
+    setStep(0);
+    navigate("dashboard");
+  }
+
+  function createNewProfile(name, nextView = "dashboard") {
     const cleanName = name.trim() || `Student ${appState.profiles.length + 1}`;
     const next = createProfile(cleanName);
     setAppState((current) => ({
@@ -439,14 +563,14 @@ function App() {
     }));
     setIsPlaying(false);
     setStep(0);
-    setView("dashboard");
+    navigate(nextView);
   }
 
   function switchProfile(profileId) {
     setAppState((current) => ({ ...current, activeProfileId: profileId }));
     setIsPlaying(false);
     setStep(0);
-    setView("dashboard");
+    navigate("dashboard");
   }
 
   function deleteActiveProfile() {
@@ -460,7 +584,7 @@ function App() {
     });
     setIsPlaying(false);
     setStep(0);
-    setView("dashboard");
+    navigate("dashboard");
     setDeleteProfileOpen(false);
   }
 
@@ -469,41 +593,47 @@ function App() {
       openPractice();
       return;
     }
-    setView("library");
+    navigate("library");
+  }
+
+  function openProfileModal(mode = "create", nextView = "dashboard") {
+    setProfileModalMode(mode);
+    setAfterProfileCreate(() => nextView);
+    setProfileModalOpen(true);
+  }
+
+  function startFromLanding() {
+    if (appState.profiles.length === 0) {
+      openProfileModal("start", "dashboard");
+      return;
+    }
+    navigate("dashboard");
   }
 
   return (
     <div className={`app-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+      {view !== "home" && (
       <Sidebar
         view={view}
-        setView={setView}
+        setView={navigate}
         openPractice={openPractice}
         goToPracticeOrLibrary={goToPracticeOrLibrary}
         collapsed={sidebarCollapsed}
         setCollapsed={setSidebarCollapsed}
-        profiles={appState.profiles}
-        activeProfile={activeProfile}
-        switchProfile={switchProfile}
-        openCreateProfile={() => setProfileModalOpen(true)}
-        openDeleteProfile={() => setDeleteProfileOpen(true)}
-        canDeleteProfile={appState.profiles.length > 1}
-        updateActiveProfileName={updateActiveProfileName}
       />
+      )}
       <main className={`main-area ${view === "practice" ? "practice-main" : ""}`}>
-        {view !== "practice" && (
+        {view !== "home" && (
           <TopBar
             view={view}
-            profiles={appState.profiles}
             activeProfile={activeProfile}
-            switchProfile={switchProfile}
-            openCreateProfile={() => setProfileModalOpen(true)}
-            openDeleteProfile={() => setDeleteProfileOpen(true)}
-            canDeleteProfile={appState.profiles.length > 1}
-            updateActiveProfileName={updateActiveProfileName}
+            openSettings={() => setSettingsOpen(true)}
+            openProfileSwitcher={() => setProfileSwitcherOpen(true)}
           />
         )}
+        {view === "home" && <LandingPage onStart={startFromLanding} onExplore={() => navigate("library")} />}
         {view === "dashboard" && (
-          <Dashboard profile={activeProfile} prefs={prefs} selectedScale={selectedScale} openPractice={openPractice} setView={setView} />
+          <Dashboard profile={activeProfile} prefs={prefs} selectedScale={selectedScale} openPractice={openPractice} setView={navigate} />
         )}
         {view === "library" && (
           <ScaleLibrary
@@ -527,18 +657,20 @@ function App() {
             step={step}
             setStep={setStep}
             sequence={sequence}
-            setView={setView}
+            primeAudio={primeAudio}
           />
         )}
       </main>
-      {view !== "practice" && <SiteFooter />}
-      {view !== "practice" && <MobileNav view={view} setView={setView} goToPracticeOrLibrary={goToPracticeOrLibrary} />}
+      {view !== "practice" && <SiteFooter compact={view === "home"} />}
+      {view !== "practice" && view !== "home" && <MobileNav view={view} setView={navigate} goToPracticeOrLibrary={goToPracticeOrLibrary} />}
       <NewProfileModal
         open={profileModalOpen}
+        mode={profileModalMode}
         onClose={() => setProfileModalOpen(false)}
         onCreate={(name) => {
-          createNewProfile(name);
+          createNewProfile(name, afterProfileCreate || "dashboard");
           setProfileModalOpen(false);
+          setAfterProfileCreate(null);
         }}
       />
       <ConfirmDeleteProfileModal
@@ -547,6 +679,35 @@ function App() {
         canDelete={appState.profiles.length > 1}
         onClose={() => setDeleteProfileOpen(false)}
         onConfirm={deleteActiveProfile}
+      />
+      <ProfileSwitcherModal
+        open={profileSwitcherOpen}
+        profiles={appState.profiles}
+        activeProfileId={activeProfile.id}
+        canDelete={appState.profiles.length > 1}
+        onClose={() => setProfileSwitcherOpen(false)}
+        onSelect={(profileId) => {
+          switchProfile(profileId);
+          setProfileSwitcherOpen(false);
+        }}
+        onCreate={() => {
+          setProfileSwitcherOpen(false);
+          openProfileModal("create", "dashboard");
+        }}
+        onDelete={(profileId) => {
+          const profile = appState.profiles.find((item) => item.id === profileId);
+          if (!profile) return;
+          setProfileSwitcherOpen(false);
+          setDeleteProfileOpen(true);
+          if (profileId !== activeProfile.id) switchProfile(profileId);
+        }}
+      />
+      <SettingsModal
+        open={settingsOpen}
+        profile={activeProfile}
+        onClose={() => setSettingsOpen(false)}
+        onRename={updateActiveProfileName}
+        onResetProgress={resetActiveProfileProgress}
       />
     </div>
   );
@@ -559,22 +720,7 @@ function Sidebar({
   goToPracticeOrLibrary,
   collapsed,
   setCollapsed,
-  profiles,
-  activeProfile,
-  switchProfile,
-  openCreateProfile,
-  openDeleteProfile,
-  canDeleteProfile,
-  updateActiveProfileName,
 }) {
-  const [editingName, setEditingName] = useState(false);
-  const [draftName, setDraftName] = useState(activeProfile.name);
-
-  useEffect(() => {
-    setDraftName(activeProfile.name);
-    setEditingName(false);
-  }, [activeProfile.id, activeProfile.name]);
-
   const items = [
     { id: "dashboard", label: "Dashboard", icon: Grid2X2 },
     { id: "library", label: "Library", icon: BookOpen },
@@ -584,53 +730,10 @@ function Sidebar({
   return (
     <aside className="sidebar">
       <div className="brand-row">
-        <span className="brand">FretFlow</span>
+        <span className="brand">Nylon Steps</span>
         <button className="menu-toggle" onClick={() => setCollapsed((current) => !current)} aria-label={collapsed ? "Open menu" : "Close menu"}>
           <Menu size={22} />
         </button>
-      </div>
-      <div className="profile">
-        <div className="avatar">{activeProfile.name.slice(0, 2).toUpperCase()}</div>
-        <div className="profile-body">
-          {editingName ? (
-            <form
-              className="profile-edit"
-              onSubmit={(event) => {
-                event.preventDefault();
-                const nextName = draftName.trim() || "Student";
-                updateActiveProfileName(nextName);
-                setEditingName(false);
-              }}
-            >
-              <input value={draftName} onChange={(event) => setDraftName(event.target.value)} aria-label="Profile name" />
-              <button type="submit">Save</button>
-            </form>
-          ) : (
-            <button className="profile-name" onClick={() => setEditingName(true)}>
-              <strong>{activeProfile.name}</strong>
-              <span>{activeProfile.hasPracticeStarted ? "Active Student" : "New Student"}</span>
-            </button>
-          )}
-        </div>
-        <button className="delete-profile profile-delete-inline" onClick={openDeleteProfile} disabled={!canDeleteProfile} aria-label="Delete current profile">
-          <Trash2 size={16} />
-        </button>
-      </div>
-      <button className="sidebar-new-profile" onClick={openCreateProfile} aria-label="Create student profile">
-        <Plus size={16} />
-        <span>New student</span>
-      </button>
-      <div className="profile-switcher">
-        <label>
-          <span>Profile</span>
-          <select value={activeProfile.id} onChange={(event) => switchProfile(event.target.value)}>
-            {profiles.map((profile) => (
-              <option key={profile.id} value={profile.id}>
-                {profile.name}
-              </option>
-            ))}
-          </select>
-        </label>
       </div>
       <nav className="side-links">
         {items.map((item) => {
@@ -650,48 +753,83 @@ function Sidebar({
       </nav>
       <button className="primary full start-practice" onClick={goToPracticeOrLibrary}>
         <Play size={19} />
-        <span>{activeProfile.hasPracticeStarted ? "Resume Practice" : "Choose Scale"}</span>
+        <span>Practice</span>
       </button>
     </aside>
   );
 }
 
+function LandingPage({ onStart, onExplore }) {
+  return (
+    <section className="landing-page">
+      <header className="landing-nav">
+        <span className="brand">Nylon Steps</span>
+        <button className="landing-link" onClick={onExplore}>Scale Library</button>
+      </header>
+      <div className="landing-hero">
+        <div className="landing-copy">
+          <span className="section-kicker">Guitar scale ear trainer</span>
+          <h1>Guitar scale ear training for better improvisation.</h1>
+          <p>
+            Practice modes, harmonic minor, blues and pentatonic scales by hearing their color and
+            moving through the shapes on a clean interactive fretboard.
+          </p>
+          <p className="landing-seo-copy">
+            Nylon Steps helps guitar players connect scale patterns with sound so improvisation feels
+            less random and more musical.
+          </p>
+          <div className="landing-actions">
+            <button className="primary landing-primary" onClick={onStart}>
+              <Play size={21} />
+              Start Practice
+            </button>
+            <button className="ghost-action landing-secondary" onClick={onExplore}>
+              Browse Scales
+            </button>
+          </div>
+        </div>
+        <div className="landing-fret-preview" aria-hidden="true">
+          <div className="preview-neck">
+            {[0, 1, 2, 3, 4, 5].map((line) => <span key={line} className="landing-string" />)}
+            {[1, 2, 3, 4, 5].map((fret) => <i key={fret} className="landing-fret" style={{ left: `${18 + fret * 14}%` }} />)}
+            <b style={{ left: "24%", top: "72%" }}>A</b>
+            <b className="blue" style={{ left: "38%", top: "58%" }}>C</b>
+            <b className="blue" style={{ left: "52%", top: "44%" }}>D</b>
+            <b style={{ left: "66%", top: "30%" }}>E</b>
+            <b className="blue" style={{ left: "80%", top: "16%" }}>G</b>
+          </div>
+          <div className="landing-stats">
+            <span>19 frets</span>
+            <span>Modes</span>
+            <span>Position practice</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function TopBar({
   view,
-  profiles,
   activeProfile,
-  switchProfile,
-  openCreateProfile,
-  openDeleteProfile,
-  canDeleteProfile,
-  updateActiveProfileName,
+  openSettings,
+  openProfileSwitcher,
 }) {
   return (
     <header className="topbar">
       <div>
-        <span className="eyebrow">FretFlow</span>
-        <strong>{view === "library" ? "Scale Library" : view === "about" ? "Support" : "Dashboard"}</strong>
+        <span className="eyebrow">Nylon Steps</span>
+        <strong>{view === "library" ? "Scale Library" : view === "about" ? "Support" : view === "practice" ? "Practice" : "Dashboard"}</strong>
       </div>
       <div className="top-actions">
-        {view === "library" && (
-          <label className="searchbox">
-            <Search size={16} />
-            <input placeholder="Search scales..." />
-          </label>
-        )}
         <TopProfileControls
-          profiles={profiles}
           activeProfile={activeProfile}
-          switchProfile={switchProfile}
-          openCreateProfile={openCreateProfile}
-          openDeleteProfile={openDeleteProfile}
-          canDeleteProfile={canDeleteProfile}
-          updateActiveProfileName={updateActiveProfileName}
+          openProfileSwitcher={openProfileSwitcher}
         />
-        <button className="icon-btn" aria-label="Settings">
+        <button className="icon-btn settings-button" aria-label="Settings" onClick={openSettings}>
           <Settings size={22} />
         </button>
-        <button className="icon-btn" aria-label="Help">
+        <button className="icon-btn help-button" aria-label="Help">
           <HelpCircle size={22} />
         </button>
       </div>
@@ -700,59 +838,19 @@ function TopBar({
 }
 
 function TopProfileControls({
-  profiles,
   activeProfile,
-  switchProfile,
-  openCreateProfile,
-  openDeleteProfile,
-  canDeleteProfile,
-  updateActiveProfileName,
+  openProfileSwitcher,
 }) {
-  const [editing, setEditing] = useState(false);
-  const [draftName, setDraftName] = useState(activeProfile.name);
-
-  useEffect(() => {
-    setDraftName(activeProfile.name);
-    setEditing(false);
-  }, [activeProfile.id, activeProfile.name]);
-
   return (
     <div className="top-profile-controls">
-      {editing ? (
-        <form
-          className="top-profile-edit"
-          onSubmit={(event) => {
-            event.preventDefault();
-            updateActiveProfileName(draftName.trim() || "Student");
-            setEditing(false);
-          }}
-        >
-          <input value={draftName} onChange={(event) => setDraftName(event.target.value)} aria-label="Profile name" />
-          <button type="submit">Save</button>
-        </form>
-      ) : (
-        <button className="top-profile-name" onClick={() => setEditing(true)} aria-label="Edit profile name">
-          {activeProfile.name}
-        </button>
-      )}
-      <button className="top-profile-delete" onClick={openDeleteProfile} disabled={!canDeleteProfile} aria-label="Delete current profile">
-        <Trash2 size={16} />
-      </button>
-      <select aria-label="Active profile" value={activeProfile.id} onChange={(event) => switchProfile(event.target.value)}>
-        {profiles.map((profile) => (
-          <option key={profile.id} value={profile.id}>
-            {profile.name}
-          </option>
-        ))}
-      </select>
-      <button className="top-profile-add" onClick={openCreateProfile} aria-label="Create student profile">
-        <Plus size={17} />
+      <button className="top-profile-name" onClick={openProfileSwitcher} aria-label="Choose student profile">
+        {activeProfile.name}
       </button>
     </div>
   );
 }
 
-function NewProfileModal({ open, onClose, onCreate }) {
+function NewProfileModal({ open, mode = "create", onClose, onCreate }) {
   const [name, setName] = useState("");
   const inputRef = useRef(null);
 
@@ -780,9 +878,17 @@ function NewProfileModal({ open, onClose, onCreate }) {
         <div className="modal-mark">
           <Music2 size={28} />
         </div>
-        <span className="section-kicker">New Student</span>
-        <h2 id="new-profile-title">Who is practicing?</h2>
-        <p>Create a separate practice space with its own BPM, selected scales and progress history.</p>
+        <span className="section-kicker">{mode === "start" ? "Before we start" : "New Student"}</span>
+        <h2 id="new-profile-title">{mode === "start" ? "Create your practice profile" : "Who is practicing?"}</h2>
+        <p>
+          {mode === "start"
+            ? "Add your name so Nylon Steps can keep your selected scales, BPM and progress separate."
+            : "Create a separate practice space with its own BPM, selected scales and progress history."}
+        </p>
+        <div className="local-storage-note">
+          <Info size={18} />
+          <span>All practice information is stored locally on your device.</span>
+        </div>
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -791,7 +897,7 @@ function NewProfileModal({ open, onClose, onCreate }) {
         >
           <label>
             Student name
-            <input ref={inputRef} value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. Sara, Ali, Nika" />
+            <input ref={inputRef} value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. Alex, Mia, Leo" />
           </label>
           <div className="modal-actions">
             <button type="button" className="ghost-action" onClick={onClose}>
@@ -799,7 +905,7 @@ function NewProfileModal({ open, onClose, onCreate }) {
             </button>
             <button type="submit" className="primary modal-primary">
               <Plus size={18} />
-              Create Profile
+              {mode === "start" ? "Create and Continue" : "Create Profile"}
             </button>
           </div>
         </form>
@@ -845,6 +951,188 @@ function ConfirmDeleteProfileModal({ open, profileName, canDelete, onClose, onCo
   );
 }
 
+function ProfileSwitcherModal({ open, profiles, activeProfileId, canDelete, onClose, onSelect, onCreate, onDelete }) {
+  useEffect(() => {
+    if (!open) return undefined;
+    function onKeyDown(event) {
+      if (event.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
+      <section className="profile-modal profile-switcher-modal" role="dialog" aria-modal="true" aria-labelledby="profile-switcher-title" onMouseDown={(event) => event.stopPropagation()}>
+        <div className="modal-mark">
+          <Music2 size={28} />
+        </div>
+        <span className="section-kicker">Students</span>
+        <h2 id="profile-switcher-title">Choose a profile</h2>
+        <p>Select who is practicing on this device.</p>
+
+        <div className="profile-list" role="list">
+          {profiles.map((profile) => {
+            const active = profile.id === activeProfileId;
+            return (
+              <button key={profile.id} className={`profile-list-item ${active ? "active" : ""}`} onClick={() => onSelect(profile.id)} role="listitem">
+                <span className="avatar">{profile.name.slice(0, 2).toUpperCase()}</span>
+                <span>
+                  <strong>{profile.name}</strong>
+                  <small>{profile.hasPracticeStarted ? "Active Student" : "New Student"}</small>
+                </span>
+                <em>{active ? "Selected" : "Choose"}</em>
+                <span
+                  className={`profile-list-delete ${!canDelete ? "disabled" : ""}`}
+                  role="button"
+                  aria-label={`Delete ${profile.name}`}
+                  tabIndex={canDelete ? 0 : -1}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (canDelete) onDelete(profile.id);
+                  }}
+                  onKeyDown={(event) => {
+                    if (!canDelete || (event.key !== "Enter" && event.key !== " ")) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onDelete(profile.id);
+                  }}
+                >
+                  <Trash2 size={16} />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="modal-actions">
+          <button type="button" className="ghost-action" onClick={onClose}>
+            Close
+          </button>
+          <button type="button" className="primary modal-primary" onClick={onCreate}>
+            <Plus size={18} />
+            New Student
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function SettingsModal({ open, profile, onClose, onRename, onResetProgress }) {
+  const [draftName, setDraftName] = useState(profile.name);
+  const [confirmAction, setConfirmAction] = useState(null);
+
+  useEffect(() => {
+    setDraftName(profile.name);
+    setConfirmAction(null);
+  }, [profile.id, profile.name, open]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    function onKeyDown(event) {
+      if (event.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const cleanName = draftName.trim() || "Student";
+  const nameChanged = cleanName !== profile.name;
+
+  function confirmRename() {
+    if (!nameChanged) return;
+    setConfirmAction({
+      title: "Save profile name?",
+      body: `The current student name will change from ${profile.name} to ${cleanName}.`,
+      actionLabel: "Save Name",
+      danger: false,
+      onConfirm: () => {
+        onRename(cleanName);
+        setConfirmAction(null);
+      },
+    });
+  }
+
+  function confirmReset() {
+    setConfirmAction({
+      title: "Reset learning progress?",
+      body: "This clears the current student's selected lesson, practice state, streak and practice minutes. This cannot be undone.",
+      actionLabel: "Reset Progress",
+      danger: true,
+      onConfirm: () => {
+        onResetProgress();
+        setConfirmAction(null);
+        onClose();
+      },
+    });
+  }
+
+  return (
+    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
+      <section className="profile-modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" onMouseDown={(event) => event.stopPropagation()}>
+        <div className="modal-mark">
+          <Settings size={28} />
+        </div>
+        <span className="section-kicker">Settings</span>
+        <h2 id="settings-title">Student settings</h2>
+        <p>Manage the active student profile and learning state.</p>
+        <div className="local-storage-note">
+          <Info size={18} />
+          <span>All practice information is stored locally on your device.</span>
+        </div>
+
+        <div className="settings-section">
+          <label>
+            Student name
+            <input value={draftName} onChange={(event) => setDraftName(event.target.value)} aria-label="Settings profile name" />
+          </label>
+          <button className="primary settings-save" onClick={confirmRename} disabled={!nameChanged}>
+            Save Name
+          </button>
+        </div>
+
+        <div className="settings-danger-zone">
+          <div>
+            <strong>Reset learning</strong>
+            <span>Clear this student's practice history and return to the first lesson state.</span>
+          </div>
+          <button className="danger-action" onClick={confirmReset}>
+            Reset
+          </button>
+        </div>
+
+        <div className="modal-actions">
+          <button type="button" className="ghost-action" onClick={onClose}>
+            Close
+          </button>
+        </div>
+
+        {confirmAction && (
+          <div className="modal-confirm-layer" role="dialog" aria-modal="true" aria-labelledby="settings-confirm-title">
+            <div className="confirm-card">
+              <h3 id="settings-confirm-title">{confirmAction.title}</h3>
+              <p>{confirmAction.body}</p>
+              <div className="modal-actions">
+                <button className="ghost-action" onClick={() => setConfirmAction(null)}>
+                  Cancel
+                </button>
+                <button className={confirmAction.danger ? "danger-action" : "primary modal-primary"} onClick={confirmAction.onConfirm}>
+                  {confirmAction.actionLabel}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
 function Dashboard({ profile, prefs, selectedScale, openPractice, setView }) {
   const categories = [
     { name: "Classical Scales", text: "Major, minor and harmonic foundations.", accent: "amber" },
@@ -863,7 +1151,7 @@ function Dashboard({ profile, prefs, selectedScale, openPractice, setView }) {
           <p>
             {hasPracticeStarted
               ? "Pick up right where you left off. Focus on clean timing, relaxed hands and note awareness across the neck."
-              : "Choose a scale and begin your first guided fretboard session. Your progress will start counting after you practice."}
+              : "Choose a scale and begin your first guided fretboard session."}
           </p>
           <button className="primary hero-cta" onClick={() => (hasPracticeStarted ? openPractice() : setView("library"))}>
             <Play size={22} />
@@ -874,18 +1162,15 @@ function Dashboard({ profile, prefs, selectedScale, openPractice, setView }) {
       </div>
       <h2>Your Progress</h2>
       <div className="progress-grid">
-        <MetricCard label="Current Streak" value={prefs.streak} suffix="Days" icon={Gauge} tone="amber" empty={!hasPracticeStarted} />
-        <MetricCard label="Time Practiced" value={prefs.minutes} suffix="Minutes" icon={Timer} tone="blue" empty={!hasPracticeStarted} />
-        <div className="metric-card">
+        <MetricCard label="Current Streak" icon={Gauge} tone="amber" />
+        <MetricCard label="Time Practiced" icon={Timer} tone="blue" />
+        <div className="metric-card coming-soon-card">
           <div className="metric-head">
             <span>Next Milestone</span>
             <Trophy color="#ffc107" />
           </div>
-          <strong className="milestone">{hasPracticeStarted ? "Master Dorian Mode" : "Complete First Session"}</strong>
-          <p>{hasPracticeStarted ? "Achieve 120 BPM clean alternate picking across all 5 positions." : "Start any scale to unlock milestones and practice history."}</p>
-          <div className="meter">
-            <span style={{ width: hasPracticeStarted ? "72%" : "0%" }} />
-          </div>
+          <strong className="milestone">Coming Soon</strong>
+          <p>Milestones will unlock after real practice tracking is added.</p>
         </div>
       </div>
       <div className="section-title-row">
@@ -908,27 +1193,18 @@ function Dashboard({ profile, prefs, selectedScale, openPractice, setView }) {
   );
 }
 
-function MetricCard({ label, value, suffix, icon: Icon, tone, empty }) {
-  const zeroAfterStart = !empty && Number(value) === 0;
+function MetricCard({ label, icon: Icon, tone }) {
   return (
-    <div className="metric-card">
+    <div className="metric-card coming-soon-card">
       <div className="metric-head">
         <span>{label}</span>
         <Icon color={tone === "amber" ? "#ffc107" : "#90cdff"} />
       </div>
       <div className="metric-value">
-        <strong>{value}</strong>
-        <span>{suffix}</span>
+        <strong>--</strong>
+        <span>Coming Soon</span>
       </div>
-      <small>
-        {empty
-          ? "No practice recorded yet"
-          : zeroAfterStart
-            ? "First session started"
-            : label === "Time Practiced"
-              ? "+15 min compared to last week"
-              : "7-day rhythm held"}
-      </small>
+      <small>Practice tracking is not available yet.</small>
     </div>
   );
 }
@@ -948,8 +1224,26 @@ function MiniFretDiagram() {
 
 function ScaleLibrary({ selectedScaleId, setSelectedScaleId, openPractice }) {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const selectedScale = SCALES.find((scale) => scale.id === selectedScaleId) || SCALES[0];
-  const visibleScales = activeCategory === "All" ? SCALES : SCALES.filter((scale) => scale.category === activeCategory);
+  const categoryScales = activeCategory === "All" ? SCALES : SCALES.filter((scale) => scale.category === activeCategory);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const visibleScales = normalizedQuery
+    ? categoryScales.filter((scale) => {
+        const searchableText = [
+          scale.name,
+          scale.short,
+          scale.root,
+          scale.category,
+          scale.description,
+          scale.education,
+          scale.formula.join(" "),
+          getOrderedScaleNotes(scale).join(" "),
+        ].join(" ").toLowerCase();
+        return searchableText.includes(normalizedQuery);
+      })
+    : categoryScales;
+  const lessonScale = visibleScales.find((scale) => scale.id === selectedScaleId) || visibleScales[0] || selectedScale;
 
   return (
     <section className="page library-page">
@@ -957,35 +1251,55 @@ function ScaleLibrary({ selectedScaleId, setSelectedScaleId, openPractice }) {
         <h1>Scale Library</h1>
         <p>Choose a sound, study its formula, then move it across positions on the fretboard.</p>
       </div>
-      <div className="category-tabs" aria-label="Scale categories">
-        {SCALE_CATEGORIES.map((category) => (
-          <button
-            key={category}
-            className={activeCategory === category ? "active" : ""}
-            onClick={() => {
-              setActiveCategory(category);
-              const nextVisible = category === "All" ? SCALES : SCALES.filter((scale) => scale.category === category);
-              if (!nextVisible.some((scale) => scale.id === selectedScaleId)) {
-                setSelectedScaleId(nextVisible[0].id);
-              }
-            }}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
-      <ScaleLesson scale={selectedScale} onPractice={() => openPractice(selectedScale.id)} />
-      <div className="scale-grid">
-        {visibleScales.map((scale) => (
-          <ScaleCard
-            key={scale.id}
-            scale={scale}
-            active={selectedScaleId === scale.id}
-            onSelect={() => setSelectedScaleId(scale.id)}
-            onPractice={() => openPractice(scale.id)}
+      <div className="library-controls">
+        <label className="searchbox library-search">
+          <Search size={17} />
+          <input
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search scales, modes or notes..."
+            aria-label="Search scales"
           />
-        ))}
+        </label>
+        <div className="category-tabs" aria-label="Scale categories">
+          {SCALE_CATEGORIES.map((category) => (
+            <button
+              key={category}
+              className={activeCategory === category ? "active" : ""}
+              onClick={() => {
+                setActiveCategory(category);
+                const nextVisible = category === "All" ? SCALES : SCALES.filter((scale) => scale.category === category);
+                if (!nextVisible.some((scale) => scale.id === selectedScaleId)) {
+                  setSelectedScaleId(nextVisible[0].id);
+                }
+              }}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
       </div>
+      {visibleScales.length > 0 ? (
+        <>
+          <ScaleLesson scale={lessonScale} onPractice={() => openPractice(lessonScale.id)} />
+          <div className="scale-grid">
+            {visibleScales.map((scale) => (
+              <ScaleCard
+                key={scale.id}
+                scale={scale}
+                active={selectedScaleId === scale.id}
+                onSelect={() => setSelectedScaleId(scale.id)}
+                onPractice={() => openPractice(scale.id)}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="empty-library">
+          <strong>No scales found</strong>
+          <p>Try a scale name, mode, formula or note name.</p>
+        </div>
+      )}
     </section>
   );
 }
@@ -999,14 +1313,7 @@ function ScaleLesson({ scale, onPractice }) {
         <p>{scale.education}</p>
       </div>
       <div className="lesson-formula">
-        <span>Formula</span>
-        <div className="formula-row large">
-          {scale.formula.map((step, index) => (
-            <span key={`${scale.id}-lesson-${step}-${index}`} className={step.includes("b") || step.includes("#") ? "blue-chip" : index === 0 ? "root-chip" : ""}>
-              {step}
-            </span>
-          ))}
-        </div>
+        <ScaleDegreeBlock scale={scale} />
       </div>
       <div className="lesson-actions">
         <button className="primary" onClick={onPractice}>
@@ -1025,13 +1332,7 @@ function ScaleCard({ scale, active, onSelect, onPractice }) {
         <Heart size={24} fill={active ? "#2bb1ff" : "none"} />
       </button>
       <h3>{scale.name}</h3>
-      <div className="formula-row">
-        {scale.formula.map((step, index) => (
-          <span key={`${step}-${index}`} className={step.includes("b") ? "blue-chip" : index === 0 ? "root-chip" : ""}>
-            {step}
-          </span>
-        ))}
-      </div>
+      <ScaleDegreeBlock scale={scale} compact />
       <MiniScalePreview scale={scale} />
       <p>{scale.description}</p>
       <div className="scale-card-actions">
@@ -1043,6 +1344,30 @@ function ScaleCard({ scale, active, onSelect, onPractice }) {
         </button>
       </div>
     </article>
+  );
+}
+
+function ScaleDegreeBlock({ scale, compact = false }) {
+  const notes = getOrderedScaleNotes(scale);
+  return (
+    <div className={`scale-degree-block ${compact ? "compact" : ""}`}>
+      <div className="degree-label-row">
+        <span>Scale degrees</span>
+        <small>from {scale.root}</small>
+      </div>
+      <div className="formula-row">
+        {scale.formula.map((step, index) => (
+          <span key={`${scale.id}-${step}-${index}`} className={step.includes("b") || step.includes("#") ? "blue-chip" : index === 0 ? "root-chip" : ""}>
+            {step}
+          </span>
+        ))}
+      </div>
+      <div className="note-name-row" aria-label={`${scale.name} notes`}>
+        {notes.map((note, index) => (
+          <span key={`${scale.id}-note-${note}-${index}`}>{note}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -1067,29 +1392,15 @@ function MiniScalePreview({ scale }) {
   );
 }
 
-function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying, setIsPlaying, step, setStep, sequence, setView }) {
+function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying, setIsPlaying, step, setStep, sequence, primeAudio }) {
   const activeCell = sequence[step % Math.max(sequence.length, 1)];
+  const [practiceOptionsOpen, setPracticeOptionsOpen] = useState(false);
 
   return (
     <section className="practice-room">
-      <header className="practice-header">
-        <button className="icon-btn mobile-back" onClick={() => setView("dashboard")} aria-label="Back to dashboard">
-          <Home size={21} />
-        </button>
-        <strong className="practice-brand">FretFlow</strong>
-        <h1>{selectedScale.short} - {getPositionLabel(positionStart)}</h1>
-        <div className="practice-actions">
-          <button className="icon-btn" aria-label="Settings">
-            <Settings size={22} />
-          </button>
-          <button className="icon-btn" aria-label="Help">
-            <HelpCircle size={22} />
-          </button>
-        </div>
-      </header>
       <div className="position-toolbar" aria-label="Scale position selector">
         <div>
-          <span>Neck Position</span>
+          <span>{selectedScale.short}</span>
           <strong>{getPositionLabel(positionStart)}</strong>
         </div>
         <div className="position-buttons">
@@ -1109,7 +1420,14 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
         </div>
       </div>
       <div className="practice-stage">
-        <Fretboard scale={selectedScale} positionStart={positionStart} activeCellId={activeCell?.id} />
+        <Fretboard
+          scale={selectedScale}
+          positionStart={positionStart}
+          activeCellId={activeCell?.id}
+          showNoteNames={prefs.showNoteNames}
+          showScaleDegrees={prefs.showScaleDegrees}
+          rootOnly={prefs.rootOnly}
+        />
       </div>
       <div className="control-bar">
         <div className="control-cluster">
@@ -1120,15 +1438,36 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
           >
             {prefs.sound ? <Volume2 size={23} /> : <VolumeX size={23} />}
           </button>
-          <button className="round-btn" aria-label="Practice settings">
+          <button
+            className={`round-btn ${practiceOptionsOpen ? "active" : ""}`}
+            aria-label="Practice options"
+            onClick={() => setPracticeOptionsOpen((current) => !current)}
+          >
             <SlidersHorizontal size={23} />
           </button>
+          {practiceOptionsOpen && (
+            <PracticeOptionsPopover
+              prefs={prefs}
+              setPrefs={setPrefs}
+              onSequenceChange={() => {
+                setIsPlaying(false);
+                setStep(0);
+              }}
+            />
+          )}
         </div>
         <div className="transport">
           <button className="transport-step" onClick={() => setStep((current) => Math.max(0, current - 1))} aria-label="Previous note">
             <ChevronLeft size={28} />
           </button>
-          <button className="play-big" onClick={() => setIsPlaying((current) => !current)} aria-label={isPlaying ? "Pause sequencer" : "Start sequencer"}>
+          <button
+            className="play-big"
+            onClick={async () => {
+              if (!isPlaying) await primeAudio();
+              setIsPlaying((current) => !current);
+            }}
+            aria-label={isPlaying ? "Pause sequencer" : "Start sequencer"}
+          >
             {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={34} fill="currentColor" />}
           </button>
           <button
@@ -1156,17 +1495,71 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
   );
 }
 
-function Fretboard({ scale, positionStart, activeCellId }) {
+function PracticeOptionsPopover({ prefs, setPrefs, onSequenceChange }) {
+  function updateOption(patch, resetSequence = false) {
+    setPrefs((current) => ({ ...current, ...patch }));
+    if (resetSequence) onSequenceChange();
+  }
+
+  return (
+    <div className="practice-options-popover" role="dialog" aria-label="Practice options">
+      <div className="option-row">
+        <span>Show note names</span>
+        <button
+          className={prefs.showNoteNames ? "toggle active" : "toggle"}
+          onClick={() => updateOption({ showNoteNames: !prefs.showNoteNames, showScaleDegrees: prefs.showNoteNames ? prefs.showScaleDegrees : false })}
+        >
+          {prefs.showNoteNames ? "On" : "Off"}
+        </button>
+      </div>
+      <div className="option-row">
+        <span>Show scale degrees</span>
+        <button
+          className={prefs.showScaleDegrees ? "toggle active" : "toggle"}
+          onClick={() => updateOption({ showScaleDegrees: !prefs.showScaleDegrees, showNoteNames: prefs.showScaleDegrees })}
+        >
+          {prefs.showScaleDegrees ? "On" : "Off"}
+        </button>
+      </div>
+      <div className="option-row">
+        <span>Root highlight only</span>
+        <button className={prefs.rootOnly ? "toggle active" : "toggle"} onClick={() => updateOption({ rootOnly: !prefs.rootOnly })}>
+          {prefs.rootOnly ? "On" : "Off"}
+        </button>
+      </div>
+      <div className="option-group">
+        <span>Direction</span>
+        <div className="segmented">
+          {[
+            ["ascending", "Up"],
+            ["descending", "Down"],
+            ["up-down", "Up & Down"],
+          ].map(([value, label]) => (
+            <button key={value} className={prefs.sequenceDirection === value ? "active" : ""} onClick={() => updateOption({ sequenceDirection: value }, true)}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Fretboard({ scale, positionStart, activeCellId, showNoteNames, showScaleDegrees, rootOnly }) {
   const fretCount = 19;
   const cells = getFretboardNotes(scale, positionStart, fretCount);
+  const openLaneWidth = 6.8;
+  const boardStart = openLaneWidth;
+  const boardEnd = 98;
+  const playableWidth = boardEnd - boardStart;
   const fretPercents = Array.from({ length: fretCount + 1 }, (_, fret) => {
     const maxDistance = 1 - 1 / 2 ** (fretCount / 12);
     const distance = fret === 0 ? 0 : 1 - 1 / 2 ** (fret / 12);
-    return (distance / maxDistance) * 100;
+    return boardStart + (distance / maxDistance) * playableWidth;
   });
 
   function notePosition(fret, stringIndex) {
-    const left = fret === 0 ? 1.7 : (fretPercents[fret - 1] + fretPercents[fret]) / 2;
+    const left = fret === 0 ? openLaneWidth / 2 : (fretPercents[fret - 1] + fretPercents[fret]) / 2;
     const top = 12 + stringIndex * 15.2;
     return { left: `${left}%`, top: `${top}%` };
   }
@@ -1175,6 +1568,7 @@ function Fretboard({ scale, positionStart, activeCellId }) {
     <div className="fretboard-wrap">
       <div className="fretboard" role="img" aria-label={`${scale.name} guitar fretboard, ${getPositionLabel(positionStart)}`}>
         <div className="nut" />
+        <div className="open-lane" />
         {fretPercents.slice(1).map((left, index) => (
           <span key={index} className={`fret-wire fret-${index + 1}`} style={{ left: `${left}%` }}>
             <em>{index + 1}</em>
@@ -1184,7 +1578,7 @@ function Fretboard({ scale, positionStart, activeCellId }) {
           <span
             key={string.label}
             className="guitar-string"
-            style={{ top: `${12 + index * 15.2}%`, height: `${Math.max(2, 5 - index * 0.45)}px` }}
+            style={{ top: `${12 + index * 15.2}%`, height: `${2 + index * 0.58}px` }}
           >
             <b>{string.name}</b>
           </span>
@@ -1196,14 +1590,16 @@ function Fretboard({ scale, positionStart, activeCellId }) {
         <i className="inlay double bottom" style={{ left: `${(fretPercents[11] + fretPercents[12]) / 2}%` }} />
         {cells.map((cell) => {
           const active = cell.id === activeCellId;
+          const visible = !rootOnly || cell.isRoot || active;
+          const label = showScaleDegrees ? cell.degreeName : showNoteNames ? cell.displayName : "";
           return (
             <button
-              className={`note-dot ${cell.isRoot ? "root" : ""} ${active ? "active" : ""}`}
+              className={`note-dot ${cell.isRoot ? "root" : ""} ${active ? "active" : ""} ${!visible ? "muted" : ""} ${!label ? "blank" : ""}`}
               key={cell.id}
               style={notePosition(cell.fret, cell.stringIndex)}
               aria-label={`${cell.displayName} on string ${cell.stringIndex + 1}, fret ${cell.fret}`}
             >
-              {cell.displayName}
+              {visible ? label : ""}
             </button>
           );
         })}
@@ -1217,23 +1613,30 @@ function About() {
     <section className="page about-page">
       <div className="about-panel">
         <ListMusic size={38} />
-        <h1>FretFlow</h1>
+        <h1>Nylon Steps</h1>
         <p>
-          A local-first guitar scale trainer focused on clean fretboard reading, precise metronome practice and a
-          distraction-free dark interface for music stands, tablets and desktops.
+          Nylon Steps helps guitar players practice scale sounds, recognize the feeling of each mode and
+          build stronger ears for improvisation. The fretboard is a visual guide for hearing relationships,
+          not a note-reading test.
+        </p>
+        <p>
+          If you have an idea to improve the site or you notice a problem, please send it to us.
+          {" "}
+          <a href="mailto:nylonsteps@outlook.com">nylonsteps@outlook.com</a>
         </p>
         <div className="about-details">
-          <span>19-fret classical layout</span>
-          <span>Local progress storage</span>
-          <span>Tone.js audio engine</span>
+          <span>Scale ear training</span>
+          <span>Improvisation practice</span>
+          <span>Local practice storage</span>
+          <span>Feedback welcome</span>
         </div>
       </div>
     </section>
   );
 }
 
-function SiteFooter() {
-  return <footer className="site-footer">Made with ❤️ for 🎵</footer>;
+function SiteFooter({ compact = false }) {
+  return <footer className={`site-footer ${compact ? "compact-footer" : ""}`}>Made with ❤️</footer>;
 }
 
 function MobileNav({ view, setView, goToPracticeOrLibrary }) {

@@ -7,7 +7,6 @@ import {
   Gauge,
   Grid2X2,
   Heart,
-  HelpCircle,
   Home,
   Info,
   Library,
@@ -220,6 +219,7 @@ function createProfile(name = "New Student") {
     positionStart: 5,
     showNoteNames: true,
     showScaleDegrees: false,
+    showFingerNumbers: false,
     rootOnly: false,
     sequenceDirection: "up-down",
     bpm: 80,
@@ -303,6 +303,13 @@ function getPositionLabel(positionStart) {
   return position.label === "Open" ? "Open Position" : `Position ${position.label}`;
 }
 
+function getFingerNumber(fret, positionStart) {
+  if (fret === 0) return "0";
+  const start = Number(positionStart);
+  if (start <= 0) return String(fret);
+  return String(fret - start + 1);
+}
+
 function getFretboardNotes(scale, positionStart, fretCount = 19) {
   const pcs = getScalePitchClasses(scale);
   const rootPc = pitchClass(scale.root);
@@ -325,6 +332,7 @@ function getFretboardNotes(scale, positionStart, fretCount = 19) {
           note,
           displayName: noteLabels.get(pc) || note.name,
           degreeName: degreeLabels.get(pc) || "",
+          fingerNumber: getFingerNumber(fret, position.start),
           isRoot: pc === rootPc,
         });
       }
@@ -361,6 +369,7 @@ function usePersistedState() {
             positionStart: Number(profile.positionStart ?? getDefaultPositionStart(SCALES.find((scale) => scale.id === profile.selectedScaleId) || SCALES[0])),
             showNoteNames: profile.showNoteNames !== false,
             showScaleDegrees: Boolean(profile.showScaleDegrees),
+            showFingerNumbers: Boolean(profile.showFingerNumbers),
             rootOnly: Boolean(profile.rootOnly),
             sequenceDirection: profile.sequenceDirection || "up-down",
             minutes: Number(profile.minutes || 0),
@@ -379,6 +388,7 @@ function usePersistedState() {
               positionStart: Number(saved.positionStart ?? firstProfile.positionStart),
               showNoteNames: saved.showNoteNames !== false,
               showScaleDegrees: Boolean(saved.showScaleDegrees),
+              showFingerNumbers: Boolean(saved.showFingerNumbers),
               rootOnly: Boolean(saved.rootOnly),
               sequenceDirection: saved.sequenceDirection || "up-down",
               bpm: Number(saved.bpm || firstProfile.bpm),
@@ -769,14 +779,15 @@ function LandingPage({ onStart, onExplore }) {
       <div className="landing-hero">
         <div className="landing-copy">
           <span className="section-kicker">Guitar scale ear trainer</span>
-          <h1>Guitar scale ear training for better improvisation.</h1>
+          <h1>Practice guitar scales, modes and fretboard positions for better improvisation.</h1>
           <p>
-            Practice modes, harmonic minor, blues and pentatonic scales by hearing their color and
-            moving through the shapes on a clean interactive fretboard.
+            Practice major scale, natural minor, harmonic minor, pentatonic, blues and modal guitar
+            scales by hearing their color and moving through the shapes on a clean interactive
+            fretboard.
           </p>
           <p className="landing-seo-copy">
-            Nylon Steps helps guitar players connect scale patterns with sound so improvisation feels
-            less random and more musical.
+            Nylon Steps helps guitar players connect guitar scale patterns with sound so
+            improvisation feels less random and more musical across the whole neck.
           </p>
           <div className="landing-actions">
             <button className="primary landing-primary" onClick={onStart}>
@@ -805,6 +816,38 @@ function LandingPage({ onStart, onExplore }) {
           </div>
         </div>
       </div>
+      <section className="landing-seo-section" aria-labelledby="guitar-scale-guide-title">
+        <div className="landing-seo-header">
+          <span className="section-kicker">Guitar Scale Guide</span>
+          <h2 id="guitar-scale-guide-title">Guitar scales and modes you can practice on Nylon Steps</h2>
+          <p>
+            The library covers common guitar scale searches like major scale guitar, natural minor
+            guitar, harmonic minor guitar, pentatonic guitar, blues scale guitar and modal guitar
+            practice including Dorian, Phrygian, Lydian, Mixolydian, Locrian and Phrygian Dominant.
+          </p>
+        </div>
+        <div className="seo-scale-grid">
+          {SCALES.map((scale) => (
+            <article key={scale.id} className="seo-scale-card">
+              <span className="seo-scale-category">{scale.category}</span>
+              <h3>{scale.name}</h3>
+              <p>{scale.description}</p>
+              <div className="formula-row">
+                {scale.formula.map((step, index) => (
+                  <span key={`${scale.id}-seo-formula-${step}-${index}`} className={step.includes("b") || step.includes("#") ? "blue-chip" : index === 0 ? "root-chip" : ""}>
+                    {step}
+                  </span>
+                ))}
+              </div>
+              <div className="note-name-row" aria-label={`${scale.name} notes`}>
+                {getOrderedScaleNotes(scale).map((note, index) => (
+                  <span key={`${scale.id}-seo-note-${note}-${index}`}>{note}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }
@@ -817,7 +860,7 @@ function TopBar({
 }) {
   return (
     <header className="topbar">
-      <div>
+      <div className="topbar-title">
         <span className="eyebrow">Nylon Steps</span>
         <strong>{view === "library" ? "Scale Library" : view === "about" ? "Support" : view === "practice" ? "Practice" : "Dashboard"}</strong>
       </div>
@@ -828,9 +871,6 @@ function TopBar({
         />
         <button className="icon-btn settings-button" aria-label="Settings" onClick={openSettings}>
           <Settings size={22} />
-        </button>
-        <button className="icon-btn help-button" aria-label="Help">
-          <HelpCircle size={22} />
         </button>
       </div>
     </header>
@@ -1336,9 +1376,6 @@ function ScaleCard({ scale, active, onSelect, onPractice }) {
       <MiniScalePreview scale={scale} />
       <p>{scale.description}</p>
       <div className="scale-card-actions">
-        <button className="secondary-action muted" onClick={onSelect}>
-          Select
-        </button>
         <button className="secondary-action" onClick={onPractice}>
           Practice
         </button>
@@ -1395,13 +1432,28 @@ function MiniScalePreview({ scale }) {
 function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying, setIsPlaying, step, setStep, sequence, primeAudio }) {
   const activeCell = sequence[step % Math.max(sequence.length, 1)];
   const [practiceOptionsOpen, setPracticeOptionsOpen] = useState(false);
+  const practiceOptionsRef = useRef(null);
+
+  useEffect(() => {
+    if (!practiceOptionsOpen) return undefined;
+
+    function handlePointerDown(event) {
+      if (!practiceOptionsRef.current?.contains(event.target)) {
+        setPracticeOptionsOpen(false);
+      }
+    }
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => window.removeEventListener("pointerdown", handlePointerDown);
+  }, [practiceOptionsOpen]);
 
   return (
     <section className="practice-room">
       <div className="position-toolbar" aria-label="Scale position selector">
-        <div>
-          <span>{selectedScale.short}</span>
-          <strong>{getPositionLabel(positionStart)}</strong>
+        <div className="practice-current">
+          <span className="practice-current-label">Now Practicing</span>
+          <strong>{selectedScale.name}</strong>
+          <small>{getPositionLabel(positionStart)}</small>
         </div>
         <div className="position-buttons">
           {PRACTICE_POSITIONS.map((position) => (
@@ -1426,11 +1478,12 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
           activeCellId={activeCell?.id}
           showNoteNames={prefs.showNoteNames}
           showScaleDegrees={prefs.showScaleDegrees}
+          showFingerNumbers={prefs.showFingerNumbers}
           rootOnly={prefs.rootOnly}
         />
       </div>
       <div className="control-bar">
-        <div className="control-cluster">
+        <div className="control-cluster" ref={practiceOptionsRef}>
           <button
             className="round-btn"
             onClick={() => setPrefs((current) => ({ ...current, sound: !current.sound }))}
@@ -1457,9 +1510,6 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
           )}
         </div>
         <div className="transport">
-          <button className="transport-step" onClick={() => setStep((current) => Math.max(0, current - 1))} aria-label="Previous note">
-            <ChevronLeft size={28} />
-          </button>
           <button
             className="play-big"
             onClick={async () => {
@@ -1469,13 +1519,6 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
             aria-label={isPlaying ? "Pause sequencer" : "Start sequencer"}
           >
             {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={34} fill="currentColor" />}
-          </button>
-          <button
-            className="transport-step"
-            onClick={() => setStep((current) => (sequence.length ? (current + 1) % sequence.length : current))}
-            aria-label="Next note"
-          >
-            <ChevronLeft className="next-icon" size={28} />
           </button>
         </div>
         <label className="bpm-control">
@@ -1507,7 +1550,13 @@ function PracticeOptionsPopover({ prefs, setPrefs, onSequenceChange }) {
         <span>Show note names</span>
         <button
           className={prefs.showNoteNames ? "toggle active" : "toggle"}
-          onClick={() => updateOption({ showNoteNames: !prefs.showNoteNames, showScaleDegrees: prefs.showNoteNames ? prefs.showScaleDegrees : false })}
+          onClick={() =>
+            updateOption({
+              showNoteNames: !prefs.showNoteNames,
+              showScaleDegrees: prefs.showNoteNames ? prefs.showScaleDegrees : false,
+              showFingerNumbers: prefs.showNoteNames ? prefs.showFingerNumbers : false,
+            })
+          }
         >
           {prefs.showNoteNames ? "On" : "Off"}
         </button>
@@ -1516,9 +1565,30 @@ function PracticeOptionsPopover({ prefs, setPrefs, onSequenceChange }) {
         <span>Show scale degrees</span>
         <button
           className={prefs.showScaleDegrees ? "toggle active" : "toggle"}
-          onClick={() => updateOption({ showScaleDegrees: !prefs.showScaleDegrees, showNoteNames: prefs.showScaleDegrees })}
+          onClick={() =>
+            updateOption({
+              showScaleDegrees: !prefs.showScaleDegrees,
+              showNoteNames: prefs.showScaleDegrees,
+              showFingerNumbers: prefs.showScaleDegrees ? prefs.showFingerNumbers : false,
+            })
+          }
         >
           {prefs.showScaleDegrees ? "On" : "Off"}
+        </button>
+      </div>
+      <div className="option-row">
+        <span>Show finger numbers</span>
+        <button
+          className={prefs.showFingerNumbers ? "toggle active" : "toggle"}
+          onClick={() =>
+            updateOption({
+              showFingerNumbers: !prefs.showFingerNumbers,
+              showNoteNames: prefs.showFingerNumbers ? prefs.showNoteNames : false,
+              showScaleDegrees: prefs.showFingerNumbers ? prefs.showScaleDegrees : false,
+            })
+          }
+        >
+          {prefs.showFingerNumbers ? "On" : "Off"}
         </button>
       </div>
       <div className="option-row">
@@ -1545,7 +1615,7 @@ function PracticeOptionsPopover({ prefs, setPrefs, onSequenceChange }) {
   );
 }
 
-function Fretboard({ scale, positionStart, activeCellId, showNoteNames, showScaleDegrees, rootOnly }) {
+function Fretboard({ scale, positionStart, activeCellId, showNoteNames, showScaleDegrees, showFingerNumbers, rootOnly }) {
   const fretCount = 19;
   const cells = getFretboardNotes(scale, positionStart, fretCount);
   const openLaneWidth = 6.8;
@@ -1591,13 +1661,13 @@ function Fretboard({ scale, positionStart, activeCellId, showNoteNames, showScal
         {cells.map((cell) => {
           const active = cell.id === activeCellId;
           const visible = !rootOnly || cell.isRoot || active;
-          const label = showScaleDegrees ? cell.degreeName : showNoteNames ? cell.displayName : "";
+          const label = showFingerNumbers ? cell.fingerNumber : showScaleDegrees ? cell.degreeName : showNoteNames ? cell.displayName : "";
           return (
             <button
               className={`note-dot ${cell.isRoot ? "root" : ""} ${active ? "active" : ""} ${!visible ? "muted" : ""} ${!label ? "blank" : ""}`}
               key={cell.id}
               style={notePosition(cell.fret, cell.stringIndex)}
-              aria-label={`${cell.displayName} on string ${cell.stringIndex + 1}, fret ${cell.fret}`}
+              aria-label={`${cell.displayName} on string ${cell.stringIndex + 1}, fret ${cell.fret}${showFingerNumbers ? `, finger ${cell.fingerNumber}` : ""}`}
             >
               {visible ? label : ""}
             </button>
@@ -1620,7 +1690,7 @@ function About() {
           not a note-reading test.
         </p>
         <p>
-          If you have an idea to improve the site or you notice a problem, please send it to us.
+          If you have an idea to improve the site or you notice a problem, please send it to me.
           {" "}
           <a href="mailto:nylonsteps@outlook.com">nylonsteps@outlook.com</a>
         </p>

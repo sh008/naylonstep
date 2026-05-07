@@ -297,7 +297,9 @@ button {
 }
 
 .main-area.practice-main {
+  height: 100vh;
   padding-top: 68px;
+  overflow: hidden;
 }
 
 .topbar {
@@ -314,6 +316,10 @@ button {
   background: rgba(18, 18, 18, 0.92);
   padding: 0 28px;
   backdrop-filter: blur(16px);
+}
+
+.topbar-title {
+  max-width: 240px;
 }
 
 .topbar strong,
@@ -339,38 +345,46 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
 }
 
 .top-profile-controls {
   display: flex;
   align-items: center;
-  gap: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  padding: 0;
+  justify-content: center;
+  width: min(320px, calc(100vw - 240px));
 }
 
 .top-profile-name {
-  min-height: 32px;
-  border: 0;
+  min-height: 40px;
+  width: 100%;
+  justify-content: center;
+  border: 1px solid rgba(144, 205, 255, 0.26);
   border-radius: 999px;
-  background: rgba(43, 177, 255, 0.12);
-  color: var(--blue);
+  background:
+    linear-gradient(135deg, rgba(43, 177, 255, 0.18), rgba(43, 177, 255, 0.08)),
+    rgba(14, 19, 24, 0.94);
+  color: #dff3ff;
   font-weight: 800;
   display: flex;
   align-items: center;
-  max-width: 240px;
-  min-width: 128px;
   overflow: hidden;
-  padding: 0 12px;
+  padding: 0 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 24px rgba(0, 0, 0, 0.22);
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center;
   cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
 .top-profile-name:hover {
-  background: rgba(43, 177, 255, 0.2);
+  border-color: rgba(144, 205, 255, 0.42);
+  background:
+    linear-gradient(135deg, rgba(43, 177, 255, 0.24), rgba(43, 177, 255, 0.1)),
+    rgba(18, 25, 31, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 14px 32px rgba(43, 177, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .modal-backdrop {
@@ -687,6 +701,69 @@ button {
   padding: 9px 12px;
   font-size: 13px;
   font-weight: 800;
+}
+
+.landing-seo-section {
+  width: min(1220px, 100%);
+  margin: 78px auto 0;
+}
+
+.landing-seo-header {
+  max-width: 860px;
+  margin-bottom: 28px;
+}
+
+.landing-seo-header h2 {
+  margin: 12px 0 16px;
+  color: #fff;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.08;
+  font-weight: 900;
+}
+
+.landing-seo-header p {
+  color: var(--variant);
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.seo-scale-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.seo-scale-card {
+  display: grid;
+  gap: 14px;
+  min-height: 100%;
+  border: 1px solid rgba(62, 72, 81, 0.76);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(43, 177, 255, 0.07), transparent 44%),
+    rgba(23, 28, 33, 0.76);
+  padding: 24px;
+}
+
+.seo-scale-category {
+  color: var(--blue-soft);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.seo-scale-card h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.seo-scale-card p {
+  margin: 0;
+  color: var(--variant);
+  line-height: 1.6;
 }
 
 .danger-backdrop {
@@ -1363,6 +1440,8 @@ p {
 
 .scale-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 356px;
   overflow: hidden;
   border-radius: 12px;
@@ -1469,11 +1548,13 @@ p {
 .scale-card-actions {
   display: flex;
   gap: 10px;
+  margin-top: auto;
 }
 
 .practice-room {
   display: flex;
-  min-height: 100vh;
+  min-height: 0;
+  height: 100%;
   flex-direction: column;
   overflow: hidden;
 }
@@ -1507,22 +1588,42 @@ p {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  border-bottom: 1px solid rgba(51, 51, 51, 0.72);
-  background: rgba(18, 18, 18, 0.88);
-  padding: 14px 28px;
+  padding: 18px 28px 10px;
 }
 
+.practice-current {
+  min-width: 0;
+}
+
+.practice-current-label,
 .position-toolbar span,
-.position-toolbar strong {
+.position-toolbar strong,
+.practice-current small {
   display: block;
 }
 
+.practice-current-label,
 .position-toolbar span {
   color: #8e98a4;
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.practice-current strong {
+  margin-top: 6px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.practice-current small {
+  margin-top: 6px;
+  color: var(--blue-soft);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .position-toolbar strong {
@@ -1955,6 +2056,11 @@ input[type="range"] {
     padding-top: 64px;
   }
 
+  .main-area.practice-main {
+    height: 100vh;
+    padding-top: 64px;
+  }
+
   .topbar {
     left: 0;
   }
@@ -1972,6 +2078,14 @@ input[type="range"] {
   .landing-hero {
     grid-template-columns: 1fr;
     margin-top: 48px;
+  }
+
+  .landing-seo-section {
+    margin-top: 56px;
+  }
+
+  .seo-scale-grid {
+    grid-template-columns: 1fr;
   }
 
   .landing-fret-preview {
@@ -2068,7 +2182,17 @@ input[type="range"] {
   .position-toolbar {
     align-items: flex-start;
     flex-direction: column;
-    padding: 12px 16px;
+    gap: 12px;
+    padding: 16px 16px 10px;
+  }
+
+  .practice-current {
+    width: 100%;
+  }
+
+  .practice-current strong {
+    max-width: 100%;
+    font-size: 18px;
   }
 
   .position-buttons {
@@ -2141,6 +2265,10 @@ input[type="range"] {
     font-size: 17px;
   }
 
+  .landing-seo-header p {
+    font-size: 17px;
+  }
+
   .landing-actions .primary,
   .landing-actions .ghost-action {
     width: 100%;
@@ -2155,30 +2283,22 @@ input[type="range"] {
     padding: 0 14px;
   }
 
-  .topbar > div:first-child {
+  .topbar-title {
     display: none;
   }
 
   .top-actions {
-    width: 100%;
-  }
-
-  .topbar > div:first-child strong {
-    font-size: 15px;
+    width: auto;
   }
 
   .top-profile-controls {
-    flex: 1;
-    gap: 5px;
-    justify-content: space-between;
-    padding: 4px;
+    width: min(260px, calc(100vw - 116px));
   }
 
   .top-profile-name {
-    flex: 1;
-    min-width: 0;
-    max-width: none;
-    font-size: 12px;
+    min-height: 38px;
+    font-size: 13px;
+    padding: 0 16px;
   }
 
   .profile-modal {

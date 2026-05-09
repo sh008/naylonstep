@@ -1940,6 +1940,134 @@ p {
   color: var(--blue);
 }
 
+.chord-modal {
+  width: min(980px, 100%);
+  max-height: min(86vh, 820px);
+  overflow-y: auto;
+}
+
+.chord-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.chord-card {
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(43, 177, 255, 0.07), transparent 54%),
+    rgba(18, 18, 18, 0.74);
+  padding: 14px;
+}
+
+.chord-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.chord-card-head strong {
+  color: #fff;
+  font-size: 22px;
+}
+
+.chord-card-head span {
+  color: var(--blue-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chord-diagram {
+  display: grid;
+  gap: 8px;
+}
+
+.chord-string-labels {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  color: var(--variant);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.chord-neck {
+  position: relative;
+  width: min(150px, 100%);
+  height: 130px;
+  margin: 0 auto;
+}
+
+.chord-string-line,
+.chord-fret-line {
+  position: absolute;
+  display: block;
+  background: #56616b;
+}
+
+.chord-string-line {
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+}
+
+.chord-fret-line {
+  right: 0;
+  left: 0;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.chord-fret-line:first-of-type {
+  height: 4px;
+  background: #94a0aa;
+}
+
+.chord-finger-dot {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #031924;
+  font-size: 13px;
+  font-weight: 900;
+  transform: translate(-50%, -50%);
+}
+
+.chord-fret-hint {
+  color: #8e98a4;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.chord-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.chord-notes span {
+  border: 1px solid rgba(144, 205, 255, 0.18);
+  border-radius: 999px;
+  color: #dceeff;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .transport {
   display: flex;
   align-items: center;
@@ -2207,7 +2335,7 @@ input[type="range"] {
   }
 
   .practice-stage {
-    padding: 34px 16px 150px;
+    padding: 34px 16px 220px;
   }
 
   .fretboard-wrap {
@@ -2223,16 +2351,22 @@ input[type="range"] {
   .control-bar {
     left: 0;
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
     gap: 12px;
-    min-height: 150px;
-    padding: 58px 22px 14px;
+    min-height: 202px;
+    padding: 14px 22px;
+  }
+
+  .control-cluster {
+    justify-self: center;
+    order: -2;
   }
 
   .transport {
     justify-self: center;
     order: -1;
-    width: min(240px, 100%);
-    justify-content: space-between;
+    width: auto;
+    justify-content: center;
   }
 
   .bpm-control {
@@ -2354,18 +2488,11 @@ input[type="range"] {
     gap: 10px;
   }
 
-  .control-cluster {
-    display: flex;
-    position: fixed;
-    left: 18px;
-    bottom: 86px;
-    z-index: 20;
-  }
-
   .practice-options-popover {
     bottom: calc(100% + 10px);
-    left: 0;
+    left: 50%;
     width: min(300px, calc(100vw - 36px));
+    transform: translateX(-50%);
   }
 
   .play-big {

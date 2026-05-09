@@ -197,6 +197,48 @@ const SCALES = [
 
 const SCALE_CATEGORIES = ["All", "Major & Modes", "Minor & Harmonic", "Pentatonic & Blues"];
 
+const CHORD_SHAPES = {
+  A: { name: "A", quality: "Major", frets: [null, 0, 2, 2, 2, 0], fingers: [null, 0, 1, 2, 3, 0], notes: ["A", "E", "A", "C#", "E"] },
+  A7: { name: "A7", quality: "Dominant 7", frets: [null, 0, 2, 0, 2, 0], fingers: [null, 0, 2, 0, 3, 0], notes: ["A", "E", "G", "C#", "E"] },
+  A7sus4: { name: "A7sus4", quality: "Dominant sus4", frets: [null, 0, 2, 0, 3, 0], fingers: [null, 0, 2, 0, 3, 0], notes: ["A", "E", "G", "D", "E"] },
+  Am: { name: "Am", quality: "Minor", frets: [null, 0, 2, 2, 1, 0], fingers: [null, 0, 2, 3, 1, 0], notes: ["A", "E", "A", "C", "E"] },
+  Am7: { name: "Am7", quality: "Minor 7", frets: [null, 0, 2, 0, 1, 0], fingers: [null, 0, 2, 0, 1, 0], notes: ["A", "E", "G", "C", "E"] },
+  Asus4: { name: "Asus4", quality: "Suspended 4", frets: [null, 0, 2, 2, 3, 0], fingers: [null, 0, 1, 2, 3, 0], notes: ["A", "E", "A", "D", "E"] },
+  B: { name: "B", quality: "Major", frets: [null, 2, 4, 4, 4, 2], fingers: [null, 1, 3, 3, 3, 1], notes: ["B", "F#", "B", "D#", "F#"] },
+  Bdim: { name: "Bdim", quality: "Diminished", frets: [null, 2, 3, 4, 3, null], fingers: [null, 1, 2, 4, 3, null], notes: ["B", "F", "B", "D"] },
+  C: { name: "C", quality: "Major", frets: [null, 3, 2, 0, 1, 0], fingers: [null, 3, 2, 0, 1, 0], notes: ["C", "E", "G", "C", "E"] },
+  D: { name: "D", quality: "Major", frets: [null, null, 0, 2, 3, 2], fingers: [null, null, 0, 1, 3, 2], notes: ["D", "A", "D", "F#"] },
+  D7: { name: "D7", quality: "Dominant 7", frets: [null, null, 0, 2, 1, 2], fingers: [null, null, 0, 2, 1, 3], notes: ["D", "A", "C", "F#"] },
+  Dm: { name: "Dm", quality: "Minor", frets: [null, null, 0, 2, 3, 1], fingers: [null, null, 0, 2, 3, 1], notes: ["D", "A", "D", "F"] },
+  Dm7: { name: "Dm7", quality: "Minor 7", frets: [null, null, 0, 2, 1, 1], fingers: [null, null, 0, 2, 1, 1], notes: ["D", "A", "C", "F"] },
+  Dsus2: { name: "Dsus2", quality: "Suspended 2", frets: [null, null, 0, 2, 3, 0], fingers: [null, null, 0, 1, 3, 0], notes: ["D", "A", "D", "E"] },
+  "D#dim7": { name: "D#dim7", quality: "Diminished 7", frets: [null, null, 1, 2, 1, 2], fingers: [null, null, 1, 2, 1, 3], notes: ["D#", "A", "C", "F#"] },
+  E: { name: "E", quality: "Major", frets: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0], notes: ["E", "B", "E", "G#", "B", "E"] },
+  E7: { name: "E7", quality: "Dominant 7", frets: [0, 2, 0, 1, 0, 0], fingers: [0, 2, 0, 1, 0, 0], notes: ["E", "B", "D", "G#", "B", "E"] },
+  Em: { name: "Em", quality: "Minor", frets: [0, 2, 2, 0, 0, 0], fingers: [0, 2, 3, 0, 0, 0], notes: ["E", "B", "E", "G", "B", "E"] },
+  Em7: { name: "Em7", quality: "Minor 7", frets: [0, 2, 2, 0, 3, 0], fingers: [0, 2, 3, 0, 4, 0], notes: ["E", "B", "E", "G", "D", "E"] },
+  F: { name: "F", quality: "Major", frets: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1], notes: ["F", "C", "F", "A", "C", "F"] },
+  "F#dim7": { name: "F#dim7", quality: "Diminished 7", frets: [2, null, 1, 2, 1, null], fingers: [2, null, 1, 3, 1, null], notes: ["F#", "D#", "A", "C"] },
+  G: { name: "G", quality: "Major", frets: [3, 2, 0, 0, 0, 3], fingers: [3, 2, 0, 0, 0, 4], notes: ["G", "B", "D", "G", "B", "G"] },
+  G5: { name: "G5", quality: "Power chord", frets: [3, null, 0, 0, 3, 3], fingers: [2, null, 0, 0, 3, 4], notes: ["G", "D", "G", "D", "G"] },
+  Gaug: { name: "Gaug", quality: "Augmented", frets: [3, 2, 1, 0, 0, 3], fingers: [3, 2, 1, 0, 0, 4], notes: ["G", "B", "D#", "G", "B", "G"] },
+};
+
+const SCALE_CHORDS = {
+  "a-minor-pentatonic": ["Am", "Am7", "Asus4", "A7sus4", "C", "G5"],
+  "c-major": ["C", "Dm", "Em", "F", "G", "Am", "Bdim"],
+  "a-natural-minor": ["Am", "Bdim", "C", "Dm", "Em", "F", "G"],
+  "e-harmonic-minor": ["Em", "F#dim7", "Gaug", "Am", "B", "C", "D#dim7"],
+  "a-blues": ["A7", "D7", "E7", "Am7", "A7sus4"],
+  "d-dorian": ["Dm", "G", "Am", "C", "Em", "F"],
+  "e-phrygian": ["Em", "F", "G", "Am", "Dm", "C", "Bdim"],
+  "f-lydian": ["F", "G", "Em", "Dm", "C", "Am", "Bdim"],
+  "g-mixolydian": ["G", "F", "C", "Dm", "Am", "Em"],
+  "b-locrian": ["Bdim", "C", "Dm", "F", "Am", "G"],
+  "e-phrygian-dominant": ["E", "F", "Am", "Bdim", "Dm"],
+  "c-major-pentatonic": ["C", "Dsus2", "Em7", "G", "Am"],
+};
+
 const STORAGE_KEY = "fretflow-state-v1";
 const ROUTES = {
   home: "/",
@@ -282,6 +324,10 @@ function getOrderedScaleNotes(scale) {
   const noteLabels = getScaleNoteLabels(scale);
   const rootPc = pitchClass(scale.root);
   return scale.intervals.map((interval) => noteLabels.get((rootPc + interval) % 12));
+}
+
+function getRelatedChords(scale) {
+  return (SCALE_CHORDS[scale.id] || []).map((name) => CHORD_SHAPES[name]).filter(Boolean);
 }
 
 function getDefaultPositionStart(scale) {
@@ -1432,6 +1478,7 @@ function MiniScalePreview({ scale }) {
 function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying, setIsPlaying, step, setStep, sequence, primeAudio }) {
   const activeCell = sequence[step % Math.max(sequence.length, 1)];
   const [practiceOptionsOpen, setPracticeOptionsOpen] = useState(false);
+  const [chordsOpen, setChordsOpen] = useState(false);
   const practiceOptionsRef = useRef(null);
 
   useEffect(() => {
@@ -1498,6 +1545,13 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
           >
             <SlidersHorizontal size={23} />
           </button>
+          <button
+            className="round-btn"
+            aria-label={`Show chords for ${selectedScale.short}`}
+            onClick={() => setChordsOpen(true)}
+          >
+            <BookOpen size={23} />
+          </button>
           {practiceOptionsOpen && (
             <PracticeOptionsPopover
               prefs={prefs}
@@ -1534,6 +1588,7 @@ function PracticeRoom({ selectedScale, prefs, setPrefs, positionStart, isPlaying
           <strong>{prefs.bpm}</strong>
         </label>
       </div>
+      <RelatedChordsModal open={chordsOpen} scale={selectedScale} onClose={() => setChordsOpen(false)} />
     </section>
   );
 }
@@ -1611,6 +1666,107 @@ function PracticeOptionsPopover({ prefs, setPrefs, onSequenceChange }) {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function RelatedChordsModal({ open, scale, onClose }) {
+  const chords = getRelatedChords(scale);
+  const scaleNotes = getOrderedScaleNotes(scale);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    function onKeyDown(event) {
+      if (event.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
+      <section className="profile-modal chord-modal" role="dialog" aria-modal="true" aria-labelledby="related-chords-title" onMouseDown={(event) => event.stopPropagation()}>
+        <div className="modal-mark">
+          <BookOpen size={28} />
+        </div>
+        <span className="section-kicker">Related Chords</span>
+        <h2 id="related-chords-title">{scale.short}</h2>
+        <p>
+          Practice these chords with the scale to hear how the sound works in harmony. Scale notes:
+          {" "}
+          {scaleNotes.join(" ")}
+        </p>
+        <div className="chord-grid">
+          {chords.map((chord) => (
+            <ChordCard key={chord.name} chord={chord} />
+          ))}
+        </div>
+        <div className="modal-actions">
+          <button type="button" className="ghost-action" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ChordCard({ chord }) {
+  return (
+    <article className="chord-card">
+      <div className="chord-card-head">
+        <strong>{chord.name}</strong>
+        <span>{chord.quality}</span>
+      </div>
+      <ChordDiagram chord={chord} />
+      <div className="chord-notes">
+        {[...new Set(chord.notes)].map((note) => (
+          <span key={`${chord.name}-${note}`}>{note}</span>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function ChordDiagram({ chord }) {
+  const visibleFrets = 4;
+  const playedFrets = chord.frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+  const baseFret = Math.max(1, Math.min(...playedFrets, 1));
+
+  return (
+    <div className="chord-diagram" aria-label={`${chord.name} chord diagram`}>
+      <div className="chord-string-labels">
+        {chord.frets.map((fret, index) => (
+          <span key={`${chord.name}-string-${index}`}>{fret === null ? "x" : fret === 0 ? "o" : ""}</span>
+        ))}
+      </div>
+      <div className="chord-neck">
+        {Array.from({ length: 6 }, (_, index) => (
+          <span key={`${chord.name}-string-line-${index}`} className="chord-string-line" style={{ left: `${(index / 5) * 100}%` }} />
+        ))}
+        {Array.from({ length: visibleFrets + 1 }, (_, index) => (
+          <span key={`${chord.name}-fret-${index}`} className="chord-fret-line" style={{ top: `${(index / visibleFrets) * 100}%` }} />
+        ))}
+        {chord.frets.map((fret, index) => {
+          if (!Number.isFinite(fret) || fret === 0) return null;
+          const finger = chord.fingers[index];
+          return (
+            <span
+              key={`${chord.name}-dot-${index}`}
+              className="chord-finger-dot"
+              style={{
+                left: `${(index / 5) * 100}%`,
+                top: `${((fret - baseFret + 0.5) / visibleFrets) * 100}%`,
+              }}
+            >
+              {finger}
+            </span>
+          );
+        })}
+      </div>
+      <div className="chord-fret-hint">fret {baseFret}</div>
     </div>
   );
 }

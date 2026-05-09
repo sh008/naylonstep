@@ -2,31 +2,28 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source = fs.readFileSync("src/main.jsx", "utf8");
-const start = source.indexOf("const SCALES = ");
+function parseConst(name) {
+  const start = source.indexOf(`const ${name} = `);
+  if (start === -1) throw new Error(`${name} definition was not found in src/main.jsx`);
+  const afterEquals = source.indexOf("=", start) + 1;
+  const openIndex = source.slice(afterEquals).search(/[\[{]/) + afterEquals;
+  const openChar = source[openIndex];
+  const closeChar = openChar === "[" ? "]" : "}";
+  let depth = 0;
 
-if (start === -1) {
-  throw new Error("SCALES definition was not found in src/main.jsx");
-}
-
-const arrayStart = source.indexOf("[", start);
-let depth = 0;
-let arrayEnd = -1;
-
-for (let index = arrayStart; index < source.length; index += 1) {
-  const char = source[index];
-  if (char === "[") depth += 1;
-  if (char === "]") depth -= 1;
-  if (depth === 0) {
-    arrayEnd = index + 1;
-    break;
+  for (let index = openIndex; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === openChar) depth += 1;
+    if (char === closeChar) depth -= 1;
+    if (depth === 0) return vm.runInNewContext(`(${source.slice(openIndex, index + 1)})`);
   }
+
+  throw new Error(`${name} could not be parsed.`);
 }
 
-if (arrayEnd === -1) {
-  throw new Error("SCALES array could not be parsed.");
-}
-
-const SCALES = vm.runInNewContext(source.slice(arrayStart, arrayEnd));
+const SCALES = parseConst("SCALES");
+const CHORD_SHAPES = parseConst("CHORD_SHAPES");
+const SCALE_CHORDS = parseConst("SCALE_CHORDS");
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const NOTE_LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
@@ -38,6 +35,14 @@ const TUNING = [
   { name: "D", midi: 50 },
   { name: "A", midi: 45 },
   { name: "E", midi: 40 },
+];
+const CHORD_TUNING = [
+  { name: "E", midi: 40 },
+  { name: "A", midi: 45 },
+  { name: "D", midi: 50 },
+  { name: "G", midi: 55 },
+  { name: "B", midi: 59 },
+  { name: "E", midi: 64 },
 ];
 
 const EXPECTED_NOTES = {
@@ -139,4 +144,23 @@ for (const scale of SCALES) {
   }
 }
 
-console.log(`Validated ${SCALES.length} scales: formulas, intervals, note spelling and 19-fret pitch-class mapping are consistent.`);
+for (const [name, chord] of Object.entries(CHORD_SHAPES)) {
+  if (name !== chord.name) throw new Error(`${name}: chord object name mismatch`);
+  if (chord.frets.length !== 6 || chord.fingers.length !== 6) throw new Error(`${name}: chord frets/fingers must have 6 entries`);
+
+  const playedNotes = chord.frets
+    .map((fret, index) => Number.isFinite(fret) ? NOTE_NAMES[(CHORD_TUNING[index].midi + fret) % 12] : null)
+    .filter(Boolean);
+
+  assertEqual(playedNotes, chord.notes, `${name}: chord notes from frets`);
+}
+
+for (const scale of SCALES) {
+  const chords = SCALE_CHORDS[scale.id];
+  if (!Array.isArray(chords) || chords.length === 0) throw new Error(`${scale.id}: missing related chords`);
+  for (const chordName of chords) {
+    if (!CHORD_SHAPES[chordName]) throw new Error(`${scale.id}: unknown related chord ${chordName}`);
+  }
+}
+
+console.log(`Validated ${SCALES.length} scales and ${Object.keys(CHORD_SHAPES).length} chord shapes: formulas, intervals, note spelling, fretboard mapping and chord fingerings are consistent.`);

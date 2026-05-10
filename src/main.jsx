@@ -1850,6 +1850,10 @@ function About() {
           {" "}
           <a href="mailto:nylonsteps@outlook.com">nylonsteps@outlook.com</a>
         </p>
+        <div className="contact-links" aria-label="Contact links">
+          <a href="mailto:nylonsteps@outlook.com">Email: nylonsteps@outlook.com</a>
+          <a href="https://t.me/Sh0009000" target="_blank" rel="noreferrer">Telegram: @Sh0009000</a>
+        </div>
         <div className="about-details">
           <span>Scale ear training</span>
           <span>Improvisation practice</span>

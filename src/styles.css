@@ -2145,6 +2145,20 @@ input[type="range"] {
   margin-top: 28px;
 }
 
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.contact-links a {
+  border: 1px solid rgba(144, 205, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(43, 177, 255, 0.08);
+  padding: 10px 14px;
+}
+
 .about-details span {
   border: 1px solid var(--line-soft);
   border-radius: 999px;

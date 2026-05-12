@@ -1,0 +1,1744 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "vite.config.js",
+      "file_type": "code",
+      "source_file": "vite.config.js",
+      "source_location": "L1",
+      "id": "vite_config_js",
+      "community": 7,
+      "norm_label": "vite.config.js"
+    },
+    {
+      "label": "validate-scales.mjs",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L1",
+      "id": "scripts_validate_scales_mjs",
+      "community": 1,
+      "norm_label": "validate-scales.mjs"
+    },
+    {
+      "label": "source",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L4",
+      "id": "scripts_validate_scales_source",
+      "community": 1,
+      "norm_label": "source"
+    },
+    {
+      "label": "parseConst()",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L5",
+      "id": "scripts_validate_scales_parseconst",
+      "community": 1,
+      "norm_label": "parseconst()"
+    },
+    {
+      "label": "SCALES",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L24",
+      "id": "scripts_validate_scales_scales",
+      "community": 1,
+      "norm_label": "scales"
+    },
+    {
+      "label": "CHORD_SHAPES",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L25",
+      "id": "scripts_validate_scales_chord_shapes",
+      "community": 1,
+      "norm_label": "chord_shapes"
+    },
+    {
+      "label": "SCALE_CHORDS",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L26",
+      "id": "scripts_validate_scales_scale_chords",
+      "community": 1,
+      "norm_label": "scale_chords"
+    },
+    {
+      "label": "NOTE_NAMES",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L28",
+      "id": "scripts_validate_scales_note_names",
+      "community": 1,
+      "norm_label": "note_names"
+    },
+    {
+      "label": "NOTE_LETTERS",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L29",
+      "id": "scripts_validate_scales_note_letters",
+      "community": 1,
+      "norm_label": "note_letters"
+    },
+    {
+      "label": "NATURAL_PITCH_CLASSES",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L30",
+      "id": "scripts_validate_scales_natural_pitch_classes",
+      "community": 1,
+      "norm_label": "natural_pitch_classes"
+    },
+    {
+      "label": "TUNING",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L31",
+      "id": "scripts_validate_scales_tuning",
+      "community": 1,
+      "norm_label": "tuning"
+    },
+    {
+      "label": "CHORD_TUNING",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L39",
+      "id": "scripts_validate_scales_chord_tuning",
+      "community": 1,
+      "norm_label": "chord_tuning"
+    },
+    {
+      "label": "EXPECTED_NOTES",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L48",
+      "id": "scripts_validate_scales_expected_notes",
+      "community": 1,
+      "norm_label": "expected_notes"
+    },
+    {
+      "label": "EXPECTED_FORMULAS",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L63",
+      "id": "scripts_validate_scales_expected_formulas",
+      "community": 1,
+      "norm_label": "expected_formulas"
+    },
+    {
+      "label": "INTERVAL_BY_DEGREE",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L78",
+      "id": "scripts_validate_scales_interval_by_degree",
+      "community": 1,
+      "norm_label": "interval_by_degree"
+    },
+    {
+      "label": "pitchClass()",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L94",
+      "id": "scripts_validate_scales_pitchclass",
+      "community": 5,
+      "norm_label": "pitchclass()"
+    },
+    {
+      "label": "spellScaleNotes()",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L100",
+      "id": "scripts_validate_scales_spellscalenotes",
+      "community": 5,
+      "norm_label": "spellscalenotes()"
+    },
+    {
+      "label": "assertEqual()",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L114",
+      "id": "scripts_validate_scales_assertequal",
+      "community": 1,
+      "norm_label": "assertequal()"
+    },
+    {
+      "label": "ids",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L120",
+      "id": "scripts_validate_scales_ids",
+      "community": 1,
+      "norm_label": "ids"
+    },
+    {
+      "label": "rootPc",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L133",
+      "id": "scripts_validate_scales_rootpc",
+      "community": 1,
+      "norm_label": "rootpc"
+    },
+    {
+      "label": "scalePitchClasses",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L134",
+      "id": "scripts_validate_scales_scalepitchclasses",
+      "community": 1,
+      "norm_label": "scalepitchclasses"
+    },
+    {
+      "label": "inScale",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L140",
+      "id": "scripts_validate_scales_inscale",
+      "community": 1,
+      "norm_label": "inscale"
+    },
+    {
+      "label": "playedNotes",
+      "file_type": "code",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L151",
+      "id": "scripts_validate_scales_playednotes",
+      "community": 1,
+      "norm_label": "playednotes"
+    },
+    {
+      "label": "main.jsx",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1",
+      "id": "src_main_jsx",
+      "community": 0,
+      "norm_label": "main.jsx"
+    },
+    {
+      "label": "NOTE_NAMES",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L30",
+      "id": "src_main_note_names",
+      "community": 0,
+      "norm_label": "note_names"
+    },
+    {
+      "label": "NOTE_LETTERS",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L31",
+      "id": "src_main_note_letters",
+      "community": 0,
+      "norm_label": "note_letters"
+    },
+    {
+      "label": "NATURAL_PITCH_CLASSES",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L32",
+      "id": "src_main_natural_pitch_classes",
+      "community": 0,
+      "norm_label": "natural_pitch_classes"
+    },
+    {
+      "label": "TUNING",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L33",
+      "id": "src_main_tuning",
+      "community": 0,
+      "norm_label": "tuning"
+    },
+    {
+      "label": "PRACTICE_POSITIONS",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L42",
+      "id": "src_main_practice_positions",
+      "community": 0,
+      "norm_label": "practice_positions"
+    },
+    {
+      "label": "SCALES",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L51",
+      "id": "src_main_scales",
+      "community": 0,
+      "norm_label": "scales"
+    },
+    {
+      "label": "SCALE_CATEGORIES",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L198",
+      "id": "src_main_scale_categories",
+      "community": 0,
+      "norm_label": "scale_categories"
+    },
+    {
+      "label": "CHORD_SHAPES",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L200",
+      "id": "src_main_chord_shapes",
+      "community": 0,
+      "norm_label": "chord_shapes"
+    },
+    {
+      "label": "SCALE_CHORDS",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L227",
+      "id": "src_main_scale_chords",
+      "community": 0,
+      "norm_label": "scale_chords"
+    },
+    {
+      "label": "ROUTES",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L243",
+      "id": "src_main_routes",
+      "community": 0,
+      "norm_label": "routes"
+    },
+    {
+      "label": "viewFromLocation()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L251",
+      "id": "src_main_viewfromlocation",
+      "community": 0,
+      "norm_label": "viewfromlocation()"
+    },
+    {
+      "label": "createProfile()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L255",
+      "id": "src_main_createprofile",
+      "community": 0,
+      "norm_label": "createprofile()"
+    },
+    {
+      "label": "pitchClass()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L276",
+      "id": "src_main_pitchclass",
+      "community": 2,
+      "norm_label": "pitchclass()"
+    },
+    {
+      "label": "noteFromMidi()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L280",
+      "id": "src_main_notefrommidi",
+      "community": 0,
+      "norm_label": "notefrommidi()"
+    },
+    {
+      "label": "displayNote()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L286",
+      "id": "src_main_displaynote",
+      "community": 0,
+      "norm_label": "displaynote()"
+    },
+    {
+      "label": "getScalePitchClasses()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L290",
+      "id": "src_main_getscalepitchclasses",
+      "community": 2,
+      "norm_label": "getscalepitchclasses()"
+    },
+    {
+      "label": "getScaleNoteLabels()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L295",
+      "id": "src_main_getscalenotelabels",
+      "community": 2,
+      "norm_label": "getscalenotelabels()"
+    },
+    {
+      "label": "getScaleDegreeLabels()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L314",
+      "id": "src_main_getscaledegreelabels",
+      "community": 2,
+      "norm_label": "getscaledegreelabels()"
+    },
+    {
+      "label": "getOrderedScaleNotes()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L323",
+      "id": "src_main_getorderedscalenotes",
+      "community": 2,
+      "norm_label": "getorderedscalenotes()"
+    },
+    {
+      "label": "getRelatedChords()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L329",
+      "id": "src_main_getrelatedchords",
+      "community": 2,
+      "norm_label": "getrelatedchords()"
+    },
+    {
+      "label": "getDefaultPositionStart()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L333",
+      "id": "src_main_getdefaultpositionstart",
+      "community": 2,
+      "norm_label": "getdefaultpositionstart()"
+    },
+    {
+      "label": "getPositionRange()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L337",
+      "id": "src_main_getpositionrange",
+      "community": 3,
+      "norm_label": "getpositionrange()"
+    },
+    {
+      "label": "getPositionLabel()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L347",
+      "id": "src_main_getpositionlabel",
+      "community": 3,
+      "norm_label": "getpositionlabel()"
+    },
+    {
+      "label": "getFingerNumber()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L352",
+      "id": "src_main_getfingernumber",
+      "community": 0,
+      "norm_label": "getfingernumber()"
+    },
+    {
+      "label": "getFretboardNotes()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L359",
+      "id": "src_main_getfretboardnotes",
+      "community": 2,
+      "norm_label": "getfretboardnotes()"
+    },
+    {
+      "label": "getPracticeSequence()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L391",
+      "id": "src_main_getpracticesequence",
+      "community": 0,
+      "norm_label": "getpracticesequence()"
+    },
+    {
+      "label": "usePersistedState()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L400",
+      "id": "src_main_usepersistedstate",
+      "community": 4,
+      "norm_label": "usepersistedstate()"
+    },
+    {
+      "label": "useToneSampler()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L462",
+      "id": "src_main_usetonesampler",
+      "community": 4,
+      "norm_label": "usetonesampler()"
+    },
+    {
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L509",
+      "id": "src_main_app",
+      "community": 4,
+      "norm_label": "app()"
+    },
+    {
+      "label": "Sidebar()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L772",
+      "id": "src_main_sidebar",
+      "community": 0,
+      "norm_label": "sidebar()"
+    },
+    {
+      "label": "LandingPage()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L818",
+      "id": "src_main_landingpage",
+      "community": 0,
+      "norm_label": "landingpage()"
+    },
+    {
+      "label": "TopBar()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L901",
+      "id": "src_main_topbar",
+      "community": 0,
+      "norm_label": "topbar()"
+    },
+    {
+      "label": "TopProfileControls()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L926",
+      "id": "src_main_topprofilecontrols",
+      "community": 0,
+      "norm_label": "topprofilecontrols()"
+    },
+    {
+      "label": "NewProfileModal()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L939",
+      "id": "src_main_newprofilemodal",
+      "community": 0,
+      "norm_label": "newprofilemodal()"
+    },
+    {
+      "label": "ConfirmDeleteProfileModal()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1003",
+      "id": "src_main_confirmdeleteprofilemodal",
+      "community": 0,
+      "norm_label": "confirmdeleteprofilemodal()"
+    },
+    {
+      "label": "ProfileSwitcherModal()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1040",
+      "id": "src_main_profileswitchermodal",
+      "community": 0,
+      "norm_label": "profileswitchermodal()"
+    },
+    {
+      "label": "SettingsModal()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1110",
+      "id": "src_main_settingsmodal",
+      "community": 0,
+      "norm_label": "settingsmodal()"
+    },
+    {
+      "label": "Dashboard()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1222",
+      "id": "src_main_dashboard",
+      "community": 0,
+      "norm_label": "dashboard()"
+    },
+    {
+      "label": "MetricCard()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1282",
+      "id": "src_main_metriccard",
+      "community": 0,
+      "norm_label": "metriccard()"
+    },
+    {
+      "label": "MiniFretDiagram()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1298",
+      "id": "src_main_minifretdiagram",
+      "community": 0,
+      "norm_label": "minifretdiagram()"
+    },
+    {
+      "label": "ScaleLibrary()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1311",
+      "id": "src_main_scalelibrary",
+      "community": 0,
+      "norm_label": "scalelibrary()"
+    },
+    {
+      "label": "ScaleLesson()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1393",
+      "id": "src_main_scalelesson",
+      "community": 0,
+      "norm_label": "scalelesson()"
+    },
+    {
+      "label": "ScaleCard()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1414",
+      "id": "src_main_scalecard",
+      "community": 0,
+      "norm_label": "scalecard()"
+    },
+    {
+      "label": "ScaleDegreeBlock()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1433",
+      "id": "src_main_scaledegreeblock",
+      "community": 2,
+      "norm_label": "scaledegreeblock()"
+    },
+    {
+      "label": "MiniScalePreview()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1457",
+      "id": "src_main_miniscalepreview",
+      "community": 2,
+      "norm_label": "miniscalepreview()"
+    },
+    {
+      "label": "PracticeRoom()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1478",
+      "id": "src_main_practiceroom",
+      "community": 3,
+      "norm_label": "practiceroom()"
+    },
+    {
+      "label": "PracticeOptionsPopover()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1596",
+      "id": "src_main_practiceoptionspopover",
+      "community": 0,
+      "norm_label": "practiceoptionspopover()"
+    },
+    {
+      "label": "RelatedChordsModal()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1673",
+      "id": "src_main_relatedchordsmodal",
+      "community": 2,
+      "norm_label": "relatedchordsmodal()"
+    },
+    {
+      "label": "ChordCard()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1716",
+      "id": "src_main_chordcard",
+      "community": 0,
+      "norm_label": "chordcard()"
+    },
+    {
+      "label": "ChordDiagram()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1733",
+      "id": "src_main_chorddiagram",
+      "community": 0,
+      "norm_label": "chorddiagram()"
+    },
+    {
+      "label": "Fretboard()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1774",
+      "id": "src_main_fretboard",
+      "community": 3,
+      "norm_label": "fretboard()"
+    },
+    {
+      "label": "About()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1837",
+      "id": "src_main_about",
+      "community": 0,
+      "norm_label": "about()"
+    },
+    {
+      "label": "SiteFooter()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1868",
+      "id": "src_main_sitefooter",
+      "community": 0,
+      "norm_label": "sitefooter()"
+    },
+    {
+      "label": "MobileNav()",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1872",
+      "id": "src_main_mobilenav",
+      "community": 0,
+      "norm_label": "mobilenav()"
+    },
+    {
+      "label": "AGENTS.md",
+      "file_type": "document",
+      "source_file": "AGENTS.md",
+      "source_location": "L1",
+      "id": "agents_md",
+      "community": 6,
+      "norm_label": "agents.md"
+    },
+    {
+      "label": "graphify",
+      "file_type": "document",
+      "source_file": "AGENTS.md",
+      "source_location": "L1",
+      "id": "naylonsteps_agents_graphify",
+      "community": 6,
+      "norm_label": "graphify"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_source",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_parseconst",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_scales",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_chord_shapes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_scale_chords",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_note_names",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_note_letters",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_natural_pitch_classes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_tuning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_chord_tuning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_expected_notes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_expected_formulas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L78",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_interval_by_degree",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_spellscalenotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_assertequal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_ids",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L133",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_rootpc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L134",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_scalepitchclasses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L140",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_inscale",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L151",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_mjs",
+      "target": "scripts_validate_scales_playednotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/validate-scales.mjs",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "scripts_validate_scales_spellscalenotes",
+      "target": "scripts_validate_scales_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_note_names",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_note_letters",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_natural_pitch_classes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_tuning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_practice_positions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_scales",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L198",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_scale_categories",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L200",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_chord_shapes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L227",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_scale_chords",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_routes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L251",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_viewfromlocation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L255",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_createprofile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L276",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L280",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_notefrommidi",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L286",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_displaynote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L290",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getscalepitchclasses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L295",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getscalenotelabels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L314",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getscaledegreelabels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L323",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getorderedscalenotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L329",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getrelatedchords",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L333",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getdefaultpositionstart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L337",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getpositionrange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L347",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getpositionlabel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L352",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getfingernumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L359",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getfretboardnotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L391",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_getpracticesequence",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L400",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_usepersistedstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L462",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_usetonesampler",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L509",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_app",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L772",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_sidebar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L818",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_landingpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L901",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_topbar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L926",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_topprofilecontrols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L939",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_newprofilemodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1003",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_confirmdeleteprofilemodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1040",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_profileswitchermodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1110",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_settingsmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1222",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_dashboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1282",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_metriccard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1298",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_minifretdiagram",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1311",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_scalelibrary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1393",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_scalelesson",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1414",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_scalecard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1433",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_scaledegreeblock",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1457",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_miniscalepreview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1478",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_practiceroom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1596",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_practiceoptionspopover",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1673",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_relatedchordsmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1716",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_chordcard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1733",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_chorddiagram",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1774",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_fretboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1837",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_about",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1868",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_sitefooter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1872",
+      "weight": 1.0,
+      "source": "src_main_jsx",
+      "target": "src_main_mobilenav",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L291",
+      "weight": 1.0,
+      "source": "src_main_getscalepitchclasses",
+      "target": "src_main_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L296",
+      "weight": 1.0,
+      "source": "src_main_getscalenotelabels",
+      "target": "src_main_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L315",
+      "weight": 1.0,
+      "source": "src_main_getscaledegreelabels",
+      "target": "src_main_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L325",
+      "weight": 1.0,
+      "source": "src_main_getorderedscalenotes",
+      "target": "src_main_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L361",
+      "weight": 1.0,
+      "source": "src_main_getfretboardnotes",
+      "target": "src_main_pitchclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L360",
+      "weight": 1.0,
+      "source": "src_main_getfretboardnotes",
+      "target": "src_main_getscalepitchclasses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L324",
+      "weight": 1.0,
+      "source": "src_main_getorderedscalenotes",
+      "target": "src_main_getscalenotelabels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L362",
+      "weight": 1.0,
+      "source": "src_main_getfretboardnotes",
+      "target": "src_main_getscalenotelabels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L363",
+      "weight": 1.0,
+      "source": "src_main_getfretboardnotes",
+      "target": "src_main_getscaledegreelabels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1434",
+      "weight": 1.0,
+      "source": "src_main_scaledegreeblock",
+      "target": "src_main_getorderedscalenotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1675",
+      "weight": 1.0,
+      "source": "src_main_relatedchordsmodal",
+      "target": "src_main_getorderedscalenotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1674",
+      "weight": 1.0,
+      "source": "src_main_relatedchordsmodal",
+      "target": "src_main_getrelatedchords",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L364",
+      "weight": 1.0,
+      "source": "src_main_getfretboardnotes",
+      "target": "src_main_getdefaultpositionstart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1458",
+      "weight": 1.0,
+      "source": "src_main_miniscalepreview",
+      "target": "src_main_getdefaultpositionstart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L348",
+      "weight": 1.0,
+      "source": "src_main_getpositionlabel",
+      "target": "src_main_getpositionrange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L364",
+      "weight": 1.0,
+      "source": "src_main_getfretboardnotes",
+      "target": "src_main_getpositionrange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1503",
+      "weight": 1.0,
+      "source": "src_main_practiceroom",
+      "target": "src_main_getpositionlabel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1795",
+      "weight": 1.0,
+      "source": "src_main_fretboard",
+      "target": "src_main_getpositionlabel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1458",
+      "weight": 1.0,
+      "source": "src_main_miniscalepreview",
+      "target": "src_main_getfretboardnotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L1776",
+      "weight": 1.0,
+      "source": "src_main_fretboard",
+      "target": "src_main_getfretboardnotes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L511",
+      "weight": 1.0,
+      "source": "src_main_app",
+      "target": "src_main_usepersistedstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.jsx",
+      "source_location": "L527",
+      "weight": 1.0,
+      "source": "src_main_app",
+      "target": "src_main_usetonesampler",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AGENTS.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "agents_md",
+      "target": "naylonsteps_agents_graphify",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "59783f21d66116f8d084fbcf2fa51b4ba2d68ced"
+}
